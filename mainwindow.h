@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "chatmessage.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -16,6 +18,10 @@ public:
     ~MainWindow();
 
 private:
+
+    // Todo: Move-Konstruktor for ChatMessage ?!
+    void addToListWidgetChat( const ChatMessage &chatMessage );
+
     Ui::MainWindow *ui;
 
 public slots:

@@ -5,6 +5,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QWidgetItem>
+#include <QSizePolicy>
 
 #include "checkablechatmessage.h"
 #include "chatmessage.h"
@@ -22,31 +23,13 @@ MainWindow::MainWindow( QWidget *parent )
                 "User2", "Test2" };
 
     ChatMessage message3{ 3, QDateTime::currentDateTime(),
-                "User3", "Test3" };
+                "User3", "Test3\nfdsgsdfgdsfgsdfgdfgfd\n"
+"sdkjffdgsdfgdfsgsdfgdfsgdsfgdsfhajkfg"};
 
-    QListWidgetItem *item = new QListWidgetItem;
-    CheckableChatMessage *chatMessage =
-            new CheckableChatMessage{ message1, this };
+   this->addToListWidgetChat( message1 );
+   this->addToListWidgetChat( message2 );
+   this->addToListWidgetChat( message3 );
 
-    this->ui->listWidget->addItem( item );
-    this->ui->listWidget->setItemWidget( item, chatMessage );
-    item->setSizeHint( chatMessage->size() );
-
-    QListWidgetItem *item2 = new QListWidgetItem;
-    CheckableChatMessage *chatMessage2 =
-            new CheckableChatMessage{ message2, this };
-
-    this->ui->listWidget->addItem( item2 );
-    this->ui->listWidget->setItemWidget( item2, chatMessage2 );
-    item2->setSizeHint( chatMessage2->size() );
-
-    QListWidgetItem *item3 = new QListWidgetItem;
-    CheckableChatMessage *chatMessage3 =
-            new CheckableChatMessage{ message3, this };
-
-    this->ui->listWidget->addItem( item3 );
-    this->ui->listWidget->setItemWidget( item3, chatMessage3 );
-    item3->setSizeHint( chatMessage3->size() );
 }
 
 MainWindow::~MainWindow()
@@ -57,5 +40,32 @@ MainWindow::~MainWindow()
 void MainWindow::onMessageChecked( size_t messageId )
 {
     qDebug() << "Message-ID: " << messageId;
+}
+
+// Todo: Move-Konstruktor for ChatMessage ?!
+void MainWindow::addToListWidgetChat( const ChatMessage &chatMessage )
+{
+    QListWidgetItem *listWidgetItem = new QListWidgetItem;
+
+    CheckableChatMessage *checkableChatMessage =
+            new CheckableChatMessage{ chatMessage, this };
+
+
+
+    this->ui->listWidget_chat->addItem( listWidgetItem );
+    this->ui->listWidget_chat->setItemWidget( listWidgetItem, checkableChatMessage );
+
+    qDebug() << chatMessage.getId() << "\theight:   "
+               << checkableChatMessage->size().height();
+
+    checkableChatMessage->setSizePolicy(
+                QSizePolicy( QSizePolicy::Minimum,
+                           QSizePolicy::Minimum ));
+
+    qDebug() << chatMessage.getId() << "\theight:   "
+               << checkableChatMessage->size().height();
+
+
+    listWidgetItem->setSizeHint( checkableChatMessage->size() );
 }
 

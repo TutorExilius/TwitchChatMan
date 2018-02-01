@@ -33,6 +33,9 @@ public:
     }
 
 private:
+    // deletes
+    ChatMessage& operator=( ChatMessage &obj ) = delete;
+
     const size_t id;
     const QDateTime dateTime;
     const QString user;

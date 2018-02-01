@@ -22,6 +22,7 @@ public:
 
 private slots:
     void onStateChanged( int state );
+    void onTextChanged();
 
 signals:
     void emitChecked( size_t messageId );
