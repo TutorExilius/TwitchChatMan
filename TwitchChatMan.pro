@@ -20,11 +20,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     checkablechatmessage.cpp \
-    chatmessage.cpp
+    chatmessage.cpp \
+    chatparser.cpp
 
 HEADERS  += mainwindow.h \
     checkablechatmessage.h \
-    chatmessage.h
+    chatmessage.h \
+    chatparser.h
 
 FORMS    += mainwindow.ui \
     checkablechatmessage.ui

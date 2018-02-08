@@ -6,9 +6,9 @@
 #include <QFontMetrics>
 
 CheckableChatMessage::CheckableChatMessage(
-        const ChatMessage &chatMessage,
-        const MainWindow *mainWindow,
-        QWidget *parent )
+        QWidget *parent,
+        const ChatMessage *chatMessage,
+        const MainWindow *mainWindow)
 : QFrame{ parent }
 , ui{ new Ui::CheckableChatMessage }
 , chatMessage{ chatMessage }
@@ -19,13 +19,11 @@ CheckableChatMessage::CheckableChatMessage(
     QObject::connect( this, &CheckableChatMessage::emitChecked,
               this->mainWindow, &MainWindow::onMessageChecked );
 
-    QObject::connect( this->ui->textEdit, &QTextEdit::textChanged,
-              this, &CheckableChatMessage::onTextChanged );
+    const QString dateTime_username = chatMessage->getDateTime().time().toString() + "   " +chatMessage->getUser();
 
-    this->ui->label_user->setText( chatMessage.getUser() );
-    this->ui->label_time->setText(
-                chatMessage.getDateTime().time().toString() );
-    this->ui->textEdit->setText( chatMessage.getMessage() );
+    this->ui->label->setText(dateTime_username
+                                + "\n\n"
+                                + chatMessage->getMessage() );
 }
 
 CheckableChatMessage::~CheckableChatMessage()
@@ -40,12 +38,5 @@ void CheckableChatMessage::onStateChanged( int state )
 {
     qDebug() << state ;
 
-    emit emitChecked( this->chatMessage.getId() );
-}
-
-
-void CheckableChatMessage::onTextChanged()
-{
-    qDebug() << "onTextChanged() called";
-
+    emit emitChecked( this->chatMessage->getId() );
 }

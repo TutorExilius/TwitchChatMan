@@ -6,7 +6,7 @@
 #include "chatmessage.h"
 
 namespace Ui {
-class CheckableChatMessage;
+    class CheckableChatMessage;
 }
 
 class CheckableChatMessage : public QFrame
@@ -15,14 +15,13 @@ class CheckableChatMessage : public QFrame
 
 public:
     explicit CheckableChatMessage(
-                   const ChatMessage &chatMessage,
-                   const MainWindow *mainWindow,
-                   QWidget *parent = nullptr );
+                   QWidget *parent,
+                   const ChatMessage *chatMessage,
+                   const MainWindow *mainWindow );
     ~CheckableChatMessage();
 
 private slots:
     void onStateChanged( int state );
-    void onTextChanged();
 
 signals:
     void emitChecked( size_t messageId );
@@ -30,9 +29,10 @@ signals:
 private:
     Ui::CheckableChatMessage *ui;
     size_t id;
+
     const MainWindow *mainWindow;
 
-    ChatMessage chatMessage;
+    const ChatMessage *chatMessage;
 };
 
 #endif // CHECKABLECHATMESSAGE_H

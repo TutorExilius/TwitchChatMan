@@ -1,10 +1,12 @@
 #include "chatmessage.h"
 
-ChatMessage::ChatMessage( const size_t &id,
+ChatMessage::ChatMessage( QObject *parent,
+            const qulonglong &id,
             const QDateTime &dateTime,
             const QString &user,
             const QString &message )
-: id{ id }
+: QObject{ parent }
+, id{ id }
 , dateTime{ dateTime }
 , user{ user }
 , message{ message }
