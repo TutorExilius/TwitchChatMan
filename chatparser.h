@@ -2,6 +2,7 @@
 #define CHATPARSER_H
 
 #include <QObject>
+#include <QMap>
 
 // Forward-Declaration
 class ChatMessage;
@@ -24,7 +25,7 @@ public slots:
 private:
     bool ok;
     qulonglong lastMessagedId;
-    QVector<ChatMessage*> *parsedMessages;
+    QMap<qulonglong, ChatMessage*> *parsedMessages;
 };
 
 #endif // CHATPARSER_H

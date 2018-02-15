@@ -11,6 +11,10 @@
 #include "chatmessage.h"
 #include "chatparser.h"
 
+
+bool MainWindow::parseLock = false;
+
+
 MainWindow::MainWindow( QWidget *parent, const qint64 crawlEveryMsec )
 : QMainWindow{ parent }
 , ui{ new Ui::MainWindow }
@@ -120,26 +124,33 @@ void MainWindow::handleChat()
 
         if( lastHtmlSize != size )
         {
-            lastDateTime = currentDateTime;
-
-            //delay = 0;
-
-            lastHtmlSize = size;
-            ++parsedCount;
-
-            qDebug() << "Chat-Crawl No: "
-                 << parsedCount << "\tHTML-Page Length: "
-                 << size;
-
-            const QString html = this->chatView->page()->currentFrame()->toHtml();
-
-            const QVector<ChatMessage*> *newChatMessages =
-                    this->collectNewChatMessages( html );
-
-            if( newChatMessages != nullptr )
+            if( !MainWindow::parseLock )
             {
-                this->currentChatMessages.append( *newChatMessages );
-                this->updateChatMessageListView( newChatMessages );
+                MainWindow::parseLock = true;
+                qDebug() << "LOCK Parse";
+
+                lastDateTime = currentDateTime;
+                lastHtmlSize = size;
+
+                ++parsedCount;
+
+                qDebug() << "Chat-Crawl No: "
+                     << parsedCount << "\tHTML-Page Length: "
+                     << size;
+
+                const QString html = this->chatView->page()->currentFrame()->toHtml();
+
+                const QVector<ChatMessage*> *newChatMessages =
+                        this->collectNewChatMessages( html );
+
+                if( newChatMessages != nullptr )
+                {
+                    this->currentChatMessages.append( *newChatMessages );
+                    this->updateChatMessageListView( newChatMessages );
+                }
+
+                MainWindow::parseLock = false;
+                qDebug() << "U-N-LOCK Parse";
             }
         }
     }
@@ -148,6 +159,8 @@ void MainWindow::handleChat()
 const QVector<ChatMessage*>* MainWindow::collectNewChatMessages( const QString &html )
 {
     QVector<ChatMessage*> *newChatMessages = nullptr;
+
+
     // TODO: parse html and fill vector with new messages
 
     ChatParser *parser = new ChatParser;
@@ -157,6 +170,7 @@ const QVector<ChatMessage*>* MainWindow::collectNewChatMessages( const QString &
     {
         newChatMessages = parser->popParsedChatMessages();
     }
+
 
     return const_cast<const QVector<ChatMessage*>*>( newChatMessages );
 }

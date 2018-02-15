@@ -15,10 +15,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow( QWidget *parent = nullptr, const qint64 crawlEveryMsec = 100 );
+    explicit MainWindow( QWidget *parent = nullptr, const qint64 crawlEveryMsec = 250 );
     ~MainWindow();
 
 private: 
+    static bool parseLock;
+
     Ui::MainWindow *ui;
     QWebView *chatView;
     const QString defaultUrl;
