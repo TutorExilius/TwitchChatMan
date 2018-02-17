@@ -5,6 +5,7 @@
 #include <QtWebKitWidgets>
 
 #include "chatmessage.h"
+#include "chatparser.h"
 
 namespace Ui {
     class MainWindow;
@@ -19,6 +20,9 @@ public:
     ~MainWindow();
 
 private: 
+    MainWindow( const MainWindow &obj )= delete;
+    MainWindow& operator=( const MainWindow &obj ) = delete;
+
     static bool parseLock;
 
     Ui::MainWindow *ui;
@@ -26,6 +30,7 @@ private:
     const QString defaultUrl;
     qint64 crawlEveryMsec;
     QVector<ChatMessage*> currentChatMessages;
+    ChatParser *parser;
 
     // Todo: Move-Konstruktor for ChatMessage ?!
     void addToListWidgetChat( const ChatMessage *chatMessage );

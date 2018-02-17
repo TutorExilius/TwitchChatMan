@@ -1,19 +1,25 @@
 #include "checkablechatmessage.h"
 #include "ui_checkablechatmessage.h"
 
+#include "chatmessage.h"
+
 #include <QDebug>
 #include <QTextEdit>
 #include <QFontMetrics>
 
 CheckableChatMessage::CheckableChatMessage(
         QWidget *parent,
-        const ChatMessage *chatMessage,
-        const MainWindow *mainWindow)
+        const ChatMessage *chatMessage )
 : QFrame{ parent }
 , ui{ new Ui::CheckableChatMessage }
+, mainWindow{ dynamic_cast<MainWindow*>( parent ) }
 , chatMessage{ chatMessage }
-, mainWindow{ mainWindow }
 {
+    if( this->mainWindow == nullptr )
+    {
+        throw "Parent of CheckableChatMessage must be a pointer of MainWindow!";
+    }
+
     this->ui->setupUi(this);
 
     QObject::connect( this, &CheckableChatMessage::emitChecked,

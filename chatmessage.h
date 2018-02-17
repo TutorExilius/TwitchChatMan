@@ -10,33 +10,37 @@ class ChatMessage : public QObject
     Q_OBJECT
 
 public:
-    ChatMessage( QObject *parent,
+    explicit ChatMessage( QObject *parent,
                  const qulonglong &id,
                  const QDateTime &dateTime,
                  const QString &user,
                  const QString &message );
 
-    qulonglong getId() const
+    const qulonglong& getId() const
     {
         return this->id;
     }
 
-    QString getUser() const
+    const QString& getUser() const
     {
         return this->user;
     }
 
-    QDateTime getDateTime() const
+    const QDateTime& getDateTime() const
     {
         return this->dateTime;
     }
 
-    QString getMessage() const
+    const QString& getMessage() const
     {
         return this->message;
     }
 
 private:
+    ChatMessage() = delete;
+    ChatMessage( const ChatMessage &obj ) = delete;
+    ChatMessage& operator=( const ChatMessage &obj ) = delete;
+
     const qulonglong id;
     const QDateTime dateTime;
     const QString user;

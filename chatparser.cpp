@@ -1,16 +1,15 @@
 #include "chatparser.h"
 
 #include <QDebug>
-#include <QVector>
 
-#include <QThread>
-
+#include <QRegularExpression>
 
 ChatParser::ChatParser( QObject *parent )
 : QObject{ parent }
 , ok{ true }
 , lastMessagedId{ 0 }
 , parsedMessages{ new QMap<qulonglong,ChatMessage*> }
+, messages{ new QList<QString*> }
 {
 }
 
@@ -23,41 +22,41 @@ void ChatParser::parse( const QString &html )
 {
     if( this->parsedMessages->size() == 0 )
     {
-        // TODO: parse html from last ID to end of html file
+        //QList<QString*> *messages = new QList<QString*>;
 
-        QString copy = html;
+    //   int pos = html.indexOf( R"(<div class=\"chat-line__message\")" );
 
-        const QString startString = R"(<div class="chat-line__message" data-a-target="chat-line-message">)";
-        const QString endString = R"(<!-- /react-text -->)";
+        QRegularExpression reg{ "<div class=\"chat-line__message\""
+                              ".*?<!-- \\/react-text -->", QRegularExpression::DotMatchesEverythingOption };
+                                      // "(?=<div class="chat-line__message"))" };
 
-        bool containsMessage = true;
+        QRegularExpressionMatchIterator it = reg.globalMatch( html );
 
-        QVector<QString> messages;
+        int matchCounter = 0;
+        QString chatMessageHtmlPart;
+        QRegularExpressionMatch match;
 
-        int startPos = -1;
-        int endPos= -1;
-
-        do
+        while( it.hasNext() )
         {
-             startPos = copy.indexOf( startString );
-             endPos = copy.indexOf( endString );
+            match = it.next();
+            chatMessageHtmlPart = match.captured(0);
 
-             if( startPos >= 0 && endPos > 0 )
-             {
-                 const QString messageHtmlPart =
-                        copy.mid( startPos, copy.size() - (copy.size()-endPos) - startPos );
+            if( chatMessageHtmlPart.size() > 0 )
+            {
+                this->addChatMessage( chatMessageHtmlPart );
+            }
 
-                 messages.push_back( messageHtmlPart );
+            ++matchCounter;
+        }
 
-                 copy = copy.mid( endPos + endString.size() );
-                 qDebug() << "COPY: " << copy.size();
-             }
-             else
-             {
-                 containsMessage = false;
-             }
+     /*   if( messages->size() != matchCounter )
+        {
+            qDebug() << "matches counter is different to count of parsed words!\tmatches: " << matchCounter
+                     << "\t" << "parsed chats count: " << messages->size();
+        }*/
 
-        } while( containsMessage );
+        qDebug() << "matches: " << matchCounter;
+        qDebug() << "Entries: " << this->messages->size();
 
         this->ok = true;
     }
@@ -66,6 +65,14 @@ void ChatParser::parse( const QString &html )
         this->ok = false;
         qDebug() << "pop parsed messages first before next parse-cycle!";
     }
+}
+
+void ChatParser::addChatMessage( const QString &chatMessageHtmlPart )
+{
+    // TODO: LESS THAN 20% free space? -> write old chatmessages
+    // into txtfile (archive) and delete from memory (list)!
+
+    this->messages->append( new QString{chatMessageHtmlPart} );
 }
 
 QVector<ChatMessage*>* ChatParser::popParsedChatMessages()

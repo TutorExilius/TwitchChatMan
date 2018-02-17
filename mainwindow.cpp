@@ -1,16 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
 #include <QDateTime>
 #include <QDebug>
 #include <QWidgetItem>
 #include <QSizePolicy>
 
 #include "checkablechatmessage.h"
-#include "chatmessage.h"
-#include "chatparser.h"
-
 
 bool MainWindow::parseLock = false;
 
@@ -21,6 +17,7 @@ MainWindow::MainWindow( QWidget *parent, const qint64 crawlEveryMsec )
 , chatView{ nullptr }
 , defaultUrl{ "https://www.twitch.tv/popout/[PLACEHOLDER]/chat" }
 , crawlEveryMsec{ crawlEveryMsec }
+, parser{ new ChatParser{this} }
 {
     this->ui->setupUi(this);
 
@@ -39,7 +36,7 @@ void MainWindow::addToListWidgetChat( const ChatMessage *chatMessage )
     QListWidgetItem *listWidgetItem = new QListWidgetItem;
 
     CheckableChatMessage *checkableChatMessage =
-            new CheckableChatMessage{ this, chatMessage, this };
+            new CheckableChatMessage{ this, chatMessage };
 
     qDebug() << chatMessage->getId() << "\theight:   "
                << checkableChatMessage->size().height();
@@ -56,7 +53,6 @@ void MainWindow::addToListWidgetChat( const ChatMessage *chatMessage )
 
     qDebug() << chatMessage->getId() << "\theight:   "
                << checkableChatMessage->size().height();
-
 
     listWidgetItem->setSizeHint( checkableChatMessage->size() );
 
@@ -152,6 +148,10 @@ void MainWindow::handleChat()
                 MainWindow::parseLock = false;
                 qDebug() << "U-N-LOCK Parse";
             }
+            else
+            {
+                qDebug() << "Tried to parse, but parse is locked (in work!)";
+            }
         }
     }
 }
@@ -160,10 +160,7 @@ const QVector<ChatMessage*>* MainWindow::collectNewChatMessages( const QString &
 {
     QVector<ChatMessage*> *newChatMessages = nullptr;
 
-
     // TODO: parse html and fill vector with new messages
-
-    ChatParser *parser = new ChatParser;
     parser->parse( html );
 
     if( parser->isOk() )
@@ -171,13 +168,12 @@ const QVector<ChatMessage*>* MainWindow::collectNewChatMessages( const QString &
         newChatMessages = parser->popParsedChatMessages();
     }
 
-
     return const_cast<const QVector<ChatMessage*>*>( newChatMessages );
 }
 
 void MainWindow::updateChatMessageListView( const QVector<ChatMessage*> *newChatMessages )
 {
-    for( unsigned int i=0; i<newChatMessages->size(); i++ )
+    for( int i=0; i<newChatMessages->size(); i++ )
     {
         this->addToListWidgetChat( newChatMessages->at(i) );
     }

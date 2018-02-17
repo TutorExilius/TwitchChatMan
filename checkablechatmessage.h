@@ -3,7 +3,9 @@
 
 #include <QFrame>
 #include "mainwindow.h"
-#include "chatmessage.h"
+
+// Forward-Declarations
+class ChatMessage;
 
 namespace Ui {
     class CheckableChatMessage;
@@ -14,10 +16,8 @@ class CheckableChatMessage : public QFrame
     Q_OBJECT
 
 public:
-    explicit CheckableChatMessage(
-                   QWidget *parent,
-                   const ChatMessage *chatMessage,
-                   const MainWindow *mainWindow );
+    explicit CheckableChatMessage( QWidget *parent,
+                   const ChatMessage *chatMessage );
     ~CheckableChatMessage();
 
 private slots:
@@ -27,11 +27,14 @@ signals:
     void emitChecked( size_t messageId );
 
 private:
+    CheckableChatMessage() = delete;
+    CheckableChatMessage( const CheckableChatMessage& ) = delete;
+    CheckableChatMessage& operator=( const CheckableChatMessage& ) = delete;
+
     Ui::CheckableChatMessage *ui;
     size_t id;
 
     const MainWindow *mainWindow;
-
     const ChatMessage *chatMessage;
 };
 
