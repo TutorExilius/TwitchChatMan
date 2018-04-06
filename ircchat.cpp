@@ -2,7 +2,6 @@
 
 #include "config.h"
 #include "chatmanager.h"
-#include "login.h"
 
 #include <QDebug>
 
