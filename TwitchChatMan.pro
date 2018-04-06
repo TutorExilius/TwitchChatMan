@@ -4,8 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-QT       += webkitwidgets
+QT       += core gui widgets network
 
 CONFIG += c++11
 QMAKE_CXXFLAGS  += -std=c++11
@@ -16,17 +15,23 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = TwitchChatMan
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     checkablechatmessage.cpp \
     chatmessage.cpp \
-    chatparser.cpp
+    chatmanager.cpp \
+    parser.cpp \
+    ircchat.cpp \
+    config.cpp
 
 HEADERS  += mainwindow.h \
     checkablechatmessage.h \
     chatmessage.h \
-    chatparser.h
+    chatmanager.h \
+    parser.h \
+    ircchat.h \
+    login.h \
+    config.h
 
 FORMS    += mainwindow.ui \
     checkablechatmessage.ui

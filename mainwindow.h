@@ -1,13 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QtWebKitWidgets>
-
+#include "chatmanager.h"
 #include "chatmessage.h"
-#include "chatparser.h"
 
-namespace Ui {
+#include <QMainWindow>
+
+// Forward-Declarations
+
+namespace Ui
+{
     class MainWindow;
 }
 
@@ -16,8 +18,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow( QWidget *parent = nullptr, const qint64 crawlEveryMsec = 250 );
+    explicit MainWindow( QWidget *parent = nullptr );
     ~MainWindow();
+
+   void updateChatMessageListView( const QVector<ChatMessage> *newChatMessages );
 
 private: 
     MainWindow( const MainWindow &obj )= delete;
@@ -26,21 +30,25 @@ private:
     static bool parseLock;
 
     Ui::MainWindow *ui;
-    QWebView *chatView;
     const QString defaultUrl;
     qint64 crawlEveryMsec;
-    QVector<ChatMessage*> currentChatMessages;
-    ChatParser *parser;
+    ChatManager *chatManager;
 
-    // Todo: Move-Konstruktor for ChatMessage ?!
-    void addToListWidgetChat( const ChatMessage *chatMessage );
-    const QVector<ChatMessage*>* collectNewChatMessages( const QString &html );
-    void updateChatMessageListView( const QVector<ChatMessage*> *newChatMessages );
+    bool chatAutoScroll;
+
+    void addToListWidgetChat( const QVector<ChatMessage> *newChatMessages );
+    void add( const ChatMessage chatMessage );
+
+signals:
 
 public slots:
-    void onMessageChecked( size_t messageId );
-    void onStartChatClicked();
-    void handleChat();
+    void onMessageChecked( uint messageId );
+    void onConnectClicked();
+    void onDisconnectClicked();
+    void onChatChanged();
+
+    void onStopButtonClicked();        // Deprecated
+    void onContinueButtonClicked();    // Deprecated
 };
 
 #endif // MAINWINDOW_H

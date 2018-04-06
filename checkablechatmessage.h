@@ -1,13 +1,13 @@
 #ifndef CHECKABLECHATMESSAGE_H
 #define CHECKABLECHATMESSAGE_H
 
-#include <QFrame>
+#include "chatmessage.h"
 #include "mainwindow.h"
 
-// Forward-Declarations
-class ChatMessage;
+#include <QFrame>
 
-namespace Ui {
+namespace Ui
+{
     class CheckableChatMessage;
 }
 
@@ -17,14 +17,19 @@ class CheckableChatMessage : public QFrame
 
 public:
     explicit CheckableChatMessage( QWidget *parent,
-                   const ChatMessage *chatMessage );
+                   const ChatMessage chatMessage );
     ~CheckableChatMessage();
+
+    ChatMessage getChatMessage() const
+    {
+        return this->chatMessage;
+    }
 
 private slots:
     void onStateChanged( int state );
 
 signals:
-    void emitChecked( size_t messageId );
+    void emitChecked( uint messageId );
 
 private:
     CheckableChatMessage() = delete;
@@ -35,7 +40,7 @@ private:
     size_t id;
 
     const MainWindow *mainWindow;
-    const ChatMessage *chatMessage;
+    const ChatMessage chatMessage;
 };
 
 #endif // CHECKABLECHATMESSAGE_H

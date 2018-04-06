@@ -1,22 +1,22 @@
 #ifndef CHATMESSAGE_H
 #define CHATMESSAGE_H
 
-#include <QObject>
 #include <QString>
 #include <QDateTime>
 
-class ChatMessage : public QObject
+class ChatMessage
 {
-    Q_OBJECT
-
 public:
-    explicit ChatMessage( QObject *parent,
-                 const qulonglong &id,
-                 const QDateTime &dateTime,
-                 const QString &user,
-                 const QString &message );
+    ChatMessage();
+    explicit ChatMessage( const uint &id,
+                          const QDateTime &dateTime,
+                          const QString &user,
+                          const QString &message );
 
-    const qulonglong& getId() const
+    ChatMessage( const ChatMessage &obj );
+    ChatMessage& operator=( const ChatMessage &obj );
+
+    const uint& getId() const
     {
         return this->id;
     }
@@ -37,14 +37,10 @@ public:
     }
 
 private:
-    ChatMessage() = delete;
-    ChatMessage( const ChatMessage &obj ) = delete;
-    ChatMessage& operator=( const ChatMessage &obj ) = delete;
-
-    const qulonglong id;
-    const QDateTime dateTime;
-    const QString user;
-    const QString message;
+    uint id;
+    QDateTime dateTime;
+    QString user;
+    QString message;
 };
 
 #endif // CHATMESSAGE_H

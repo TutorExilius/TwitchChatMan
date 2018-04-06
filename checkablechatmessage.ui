@@ -92,6 +92,10 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="styleSheet">
+          <string notr="true">margin-left: 2px;
+margin-top: 2px;</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -103,7 +107,7 @@
           <enum>Qt::Vertical</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
+          <enum>QSizePolicy::MinimumExpanding</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -185,7 +189,7 @@
             <enum>Qt::Vertical</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
+            <enum>QSizePolicy::MinimumExpanding</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
