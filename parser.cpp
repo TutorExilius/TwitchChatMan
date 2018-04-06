@@ -7,25 +7,41 @@
 #include <QException>
 #include <QRegularExpression>
 
+uint Parser::messageCount = 0;
+
 Parser::Parser( QObject *parent )
 : QObject( parent )
 , good{ true }
-, chatManager{ dynamic_cast<ChatManager*>( parent ) }
-, parsedChatMessages{ new QMap<uint, ChatMessage> }
+//, chatManager{ dynamic_cast<ChatManager*>( parent ) }
+//, parsedChatMessages{ new QMap<uint, ChatMessage> }
 {
-    if( this->chatManager == nullptr )
+    /*if( this->chatManager == nullptr )
     {
         qDebug() << "Parent of Parser must be a pointer of ChatManager!";
         throw "Parent of Parser must be a pointer of ChatManager!";
     }
+    */
 }
 
 void Parser::reset()
 {
     this->good = true;
-    this->parsedChatMessages->clear();
+//    this->parsedChatMessages->clear();
 }
 
+ChatMessage Parser::parse( const QString &line ) const
+{
+    const QString username = this->extractName( line );
+    const QString message = this->extractMessage( line );
+
+    return ChatMessage{ ++Parser::messageCount,
+                        QDateTime::currentDateTime(),
+                        username,
+                        message };
+}
+
+
+/*
 // TODO: optimize this method! -> delegate matching-steps and delegate ChatMessage-Construction
 //       (reduce if-construct depth)
 void Parser::parse( const QString &html, const uint &parseGreaterMessageId )
@@ -86,10 +102,10 @@ void Parser::parse( const QString &html, const uint &parseGreaterMessageId )
                                     {
                                         // construct ChatMessage and add into list
 
-                                    /*Map*/
+
                                         this->parsedChatMessages->insert(
-                                        /*key*/     id,
-                                        /*value*/   ChatMessage{ id,
+                                            id,
+                                         ChatMessage{ id,
                                                                  QDateTime::currentDateTime(),
                                                                  this->extractName(chatMessageHtmlPart),
                                                                  this->extractMessage(chatMessageHtmlPart)
@@ -161,87 +177,42 @@ void Parser::deleteAllMessages()
     }
 }
 
+*/
 
-QString Parser::extractName( const QString &chatMessageHtmlPart ) const
+QString Parser::extractName( const QString &line ) const
 {
-    QRegularExpression reg{ R"(class="from".*?>.*?</span>)",
+    qDebug() << line ;
+    QRegularExpression reg{ R"(^:[^\s]*!)",
                             QRegularExpression::DotMatchesEverythingOption };
 
-    QRegularExpressionMatchIterator it = reg.globalMatch( chatMessageHtmlPart );
+    QRegularExpressionMatchIterator it = reg.globalMatch( line );
 
     if( it.hasNext() )
     {
         const QRegularExpressionMatch match = it.next();
-        QString name = match.captured(0);
+        QString username = match.captured(0);
+        username.remove( 0, 1 );
+        username.remove( username.size() - 1, 1 );
 
-        int startPos = name.indexOf(">");
-        int endPos = name.indexOf("<");
+        qDebug() << "Username: " << username;
 
-        if( startPos >= 0 && endPos >= 0 )
-        {
-            name = name.mid( startPos + 1, (endPos - startPos) - 1 );
-        }
-
-        return name;
+        return username;
     }
     else
     {
-        return "ErrorName";
+        return "ERROR_USERNAME";
     }
 }
 
-QString Parser::extractMessage( const QString &chatMessageHtmlPart ) const
+QString Parser::extractMessage( const QString &line ) const
 {
-    QRegularExpression reg{ R"(class="message">.*?</span>.*?<!)",
+    QRegularExpression reg{ R"(^:[^\s]*?!.*?PRIVMSG #.*? :)",
                             QRegularExpression::DotMatchesEverythingOption };
 
-    QRegularExpressionMatchIterator it = reg.globalMatch( chatMessageHtmlPart );
+    QString message = line;
+    message.remove( reg );
+    message.remove( "\r\n" );
 
-    if( it.hasNext() )
-    {
-        const QRegularExpressionMatch match = it.next();
-        QString stringPart = match.captured(0);
-
-        int spanStart = stringPart.indexOf( "<span" );
-        int spanEnd = stringPart.indexOf( "</span>" );
-        const int lenOfSpanEnd = 7;
-        while( spanStart >= 0 && spanEnd >= 0 )
-        {
-            stringPart = stringPart.replace( spanStart,
-                         spanEnd-spanStart+lenOfSpanEnd,
-                         "" );
-
-            spanStart = stringPart.indexOf( "<span" );
-            spanEnd = stringPart.indexOf( "</span>" );
-        }
-
-        QRegularExpression regPart{ R"(">.*?</span>)",
-                                    QRegularExpression::DotMatchesEverythingOption };
-
-        QRegularExpressionMatchIterator it_part = regPart.globalMatch( stringPart );
-
-        if( it_part.hasNext() )
-        {
-            const QRegularExpressionMatch match_part = it_part.next();
-            QString messagePart = match_part.captured(0);
-            messagePart = messagePart.remove( 0, 2 );
-            messagePart = messagePart.remove( messagePart.size()-8, 8 );
-
-            // Todo:: extract all urls
-            if( messagePart.indexOf( "<a" ) >= 0 )
-            {
-
-            }
-
-            return messagePart.trimmed();
-        }
-        else
-        {
-            return stringPart;
-        }
-    }
-    else
-    {
-        return "";
-    }
+    qDebug() << "Message: " << message;
+    return message;
 }

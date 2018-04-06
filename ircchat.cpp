@@ -13,8 +13,7 @@ IrcChat::IrcChat( QObject *parent )
 , connectionData{ nullptr }
 , currentChannel{ "TutorExilius" }
 {
-    this->config = new Config{
- R"(C:\Users\Tutor Exilius\Desktop\build-TwitchChatMan-Desktop_Qt_5_10_1_MinGW_32bit-Debug\debug\config.txt)", this };
+    this->config = new Config{"config.txt", this };
 
     this->socket = new QTcpSocket{ this };
 

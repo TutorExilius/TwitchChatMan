@@ -19,8 +19,8 @@ public:
     explicit ChatManager( QObject *parent );
     ~ChatManager();
 
-    bool parse( const QString &html );
-    bool collectNewMessages( /*Parser *parser*/ );
+    //bool parse( const QString &html );
+    //bool collectNewMessages( /*Parser *parser*/ );
 
     void reset();
 

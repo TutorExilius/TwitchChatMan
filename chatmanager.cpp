@@ -30,7 +30,7 @@ ChatManager::ChatManager( QObject *parent )
 ChatManager::~ChatManager()
 {
 }
-
+/*
 bool ChatManager::parse( const QString &html )
 {
     bool ret = false;
@@ -45,7 +45,7 @@ bool ChatManager::parse( const QString &html )
             {
                 if( this->parser->hasNewContend() )
                 {
-                    ret = this->collectNewMessages( /*this->parser*/ );
+                    ret = this->collectNewMessages( /*this->parser );
                 }
             }
             else
@@ -73,6 +73,7 @@ bool ChatManager::parse( const QString &html )
 
     return ret;
 }
+        */
 
 void ChatManager::readIrcChatData()
 {
@@ -89,12 +90,7 @@ void ChatManager::readIrcChatData()
 
         for( const auto &line : newChatLines )
         {
-            newChatMessages->push_back( ChatMessage{
-                                            0,
-                                            currentDateTime,
-                                            "UNKNOWN",
-                                            line
-                                        });
+            newChatMessages->push_back( this->parser->parse( line ) );
         }
 
         this->mainWindow->updateChatMessageListView(newChatMessages);
@@ -112,7 +108,8 @@ void ChatManager::start()
     this->ircChat->connectToChannel( "tutorexilius" );
 }
 
-bool ChatManager::collectNewMessages( /*Parser *parser*/ )
+/*
+bool ChatManager::collectNewMessages( /*Parser *parser )
 {
     bool ret = false;
 
@@ -168,6 +165,7 @@ bool ChatManager::collectNewMessages( /*Parser *parser*/ )
 
     return ret;
 }
+*/
 
 void ChatManager::reset()
 {

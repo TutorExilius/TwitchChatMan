@@ -23,6 +23,7 @@ public:
         return this->good;
     }
 
+    /*
     bool hasNewContend() const
     {
         if( this->parsedChatMessages->size() > 0 )
@@ -34,24 +35,29 @@ public:
             return false;
         }
     }
+*/
 
-    void parse( const QString &html, const uint &parseGreaterMessageId );
-    const QMap<uint, ChatMessage>* getNewMessages() const;
-    void deleteAllMessages();
+    ChatMessage parse( const QString &line ) const;
+
+    //void parse( const QString &html, const uint &parseGreaterMessageId );
+   // const QMap<uint, ChatMessage>* getNewMessages() const;
+   // void deleteAllMessages();
 
 signals:
 
 private:
+    static uint messageCount;
+
     Parser() = delete;
     Parser( const Parser &obj ) = delete;
     Parser& operator=( const Parser &obj ) = delete;
 
-    QString extractName( const QString &chatMessageHtmlPart ) const;
-    QString extractMessage( const QString &chatMessageHtmlPart ) const;
+    QString extractName( const QString &line ) const;
+    QString extractMessage( const QString &line ) const;
 
     bool good;
-    ChatManager *chatManager;
-    QMap<uint, ChatMessage> *parsedChatMessages;
+ //   ChatManager *chatManager;
+ //   QMap<uint, ChatMessage> *parsedChatMessages;
 };
 
 #endif // PARSER_H
