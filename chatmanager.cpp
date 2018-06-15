@@ -30,6 +30,12 @@ ChatManager::ChatManager( QObject *parent )
 ChatManager::~ChatManager()
 {
 }
+
+ChatMessage ChatManager::getChatMessage( const uint &messageId ) const
+{
+    return this->chatMessages->value(messageId);
+}
+
 /*
 bool ChatManager::parse( const QString &html )
 {
@@ -77,12 +83,14 @@ bool ChatManager::parse( const QString &html )
 
 void ChatManager::readIrcChatData()
 {
-    static QDateTime lastDateTime = QDateTime::currentDateTime();
-    const QDateTime currentDateTime = QDateTime::currentDateTime();
+    // -- Auskommentiert, da wir erstmal das Programm ohne Zeitpuffer testen wollen
 
-    qint64 milliSecDiff = lastDateTime.msecsTo( currentDateTime );
+    //static QDateTime lastDateTime = QDateTime::currentDateTime();
+    //const QDateTime currentDateTime = QDateTime::currentDateTime();
 
-    if( milliSecDiff > 1000 )
+    //qint64 milliSecDiff = lastDateTime.msecsTo( currentDateTime );
+
+    // if( milliSecDiff > 1000 )
     {
         QVector<QString> newChatLines = this->ircChat->getDataLines();
 
@@ -90,11 +98,15 @@ void ChatManager::readIrcChatData()
 
         for( const auto &line : newChatLines )
         {
-            newChatMessages->push_back( this->parser->parse( line ) );
+            ChatMessage chatMessage = this->parser->parse( line );
+            newChatMessages->push_back( chatMessage );
+
+            if( !this->chatMessages->contains( chatMessage.getId()))
+                this->chatMessages->insert( chatMessage.getId(), chatMessage );
         }
 
-        this->mainWindow->updateChatMessageListView(newChatMessages);
-        lastDateTime = currentDateTime;
+        this->mainWindow->fillChatMessageListView(newChatMessages);
+        //lastDateTime = currentDateTime;
     }
 }
 

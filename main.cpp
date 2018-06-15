@@ -13,6 +13,7 @@ int main( int argc, char *argv[] )
     {
         QApplication a(argc, argv);
 
+// Hat vermutlich Gründe
 #ifdef QT_DEBUG
         QDir::setCurrent( QCoreApplication::applicationDirPath() );
 #endif
@@ -34,5 +35,5 @@ int main( int argc, char *argv[] )
         qDebug() << "CRASHED";
     }
 
-    return ret;
+    return 0;
 }

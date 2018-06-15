@@ -45,11 +45,17 @@ void CheckableChatMessage::onStateChanged( int state )
 
     if( state == 0 )
     {
-        this->setStyleSheet( "background-color: #fff;" );
+        this->setStyleSheet( "CheckableChatMessage{"
+            "border: 1px solid black;"
+            "background-color: white;"
+         "}");
     }
     else
     {
-        this->setStyleSheet( "background-color: #ccc;" );
+        this->setStyleSheet( "CheckableChatMessage{"
+            "border: 1px solid black;"
+            "background-color: #aad;"
+        "}");
     }
 
     emit emitChecked( this->chatMessage.getId() );

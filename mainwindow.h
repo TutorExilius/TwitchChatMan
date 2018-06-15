@@ -5,6 +5,7 @@
 #include "chatmessage.h"
 
 #include <QMainWindow>
+#include <QListWidget>
 
 // Forward-Declarations
 
@@ -21,7 +22,7 @@ public:
     explicit MainWindow( QWidget *parent = nullptr );
     ~MainWindow();
 
-   void updateChatMessageListView( const QVector<ChatMessage> *newChatMessages );
+   void fillChatMessageListView( const QVector<ChatMessage> *newChatMessages );
 
 private: 
     MainWindow( const MainWindow &obj )= delete;
@@ -35,9 +36,10 @@ private:
     ChatManager *chatManager;
 
     bool chatAutoScroll;
+    int currentSliderEndPos;
 
     void addToListWidgetChat( const QVector<ChatMessage> *newChatMessages );
-    void add( const ChatMessage chatMessage );
+    void add( QListWidget *list, const ChatMessage chatMessage );
 
 signals:
 
@@ -49,6 +51,8 @@ public slots:
 
     void onStopButtonClicked();        // Deprecated
     void onContinueButtonClicked();    // Deprecated
+
+    void onScroll();
 };
 
 #endif // MAINWINDOW_H

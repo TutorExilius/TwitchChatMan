@@ -116,7 +116,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="sizeConstraint">
-          <enum>QLayout::SetMinimumSize</enum>
+          <enum>QLayout::SetDefaultConstraint</enum>
          </property>
          <property name="rightMargin">
           <number>0</number>
@@ -205,7 +205,7 @@
             <bool>true</bool>
            </property>
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -228,23 +228,8 @@
              <height>0</height>
             </size>
            </property>
-           <property name="styleSheet">
-            <string notr="true">QListView::item
-{
-border: 1px solid #999;
-padding: 3px;
-padding-bottom: 0px;
-margin: 5px;
-}
-
-QListView::item:hover
-{
-border: 1px solid #000;
-border: 2px solid black;
-background-color: #f8f8ff;
-}
-
-</string>
+           <property name="midLineWidth">
+            <number>8</number>
            </property>
            <property name="alternatingRowColors">
             <bool>false</bool>
@@ -260,25 +245,9 @@ background-color: #f8f8ff;
         </layout>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QListWidget" name="listWidget">
+        <widget class="QListWidget" name="listWidget_checkedMessages">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>

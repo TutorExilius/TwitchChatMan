@@ -11,6 +11,8 @@
 #include <QString>
 #include <QWidgetItem>
 #include <QPushButton>
+#include <QScrollBar>
+#include <QSlider>
 
 MainWindow::MainWindow( QWidget *parent )
 : QMainWindow{ parent }
@@ -19,6 +21,7 @@ MainWindow::MainWindow( QWidget *parent )
 , defaultUrl{ R"(https://www.twitch.tv/[PLACEHOLDER]/chat)" }
 , chatManager{ nullptr }
 , chatAutoScroll{ true }
+, currentSliderEndPos{ 0 }
 {
     this->chatManager = new ChatManager{ this };
 
@@ -34,6 +37,12 @@ MainWindow::MainWindow( QWidget *parent )
     QObject::connect( this->ui->button_connection, &QPushButton::clicked,
                       this, &MainWindow::onConnectClicked,
                       Qt::UniqueConnection );
+
+  //  QObject::connect( this->ui->listWidget_chat->verticalScrollBar(), &QScrollBar::sliderMoved,
+   //                   this, &MainWindow::onScroll );
+
+    QObject::connect( this->ui->listWidget_chat->verticalScrollBar(), &QScrollBar::valueChanged,
+                      this, &MainWindow::onScroll );
 }
 
 MainWindow::~MainWindow()
@@ -41,7 +50,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::add( const ChatMessage chatMessage )
+void MainWindow::add( QListWidget *list, const ChatMessage chatMessage )
 {
     try
     {
@@ -50,16 +59,14 @@ void MainWindow::add( const ChatMessage chatMessage )
         CheckableChatMessage *checkableChatMessage =
                 new CheckableChatMessage{ this, chatMessage };
 
-        this->ui->listWidget_chat->addItem( listWidgetItem );
-        this->ui->listWidget_chat->setItemWidget( listWidgetItem, checkableChatMessage );
+       list->addItem( listWidgetItem );
+       list->setItemWidget( listWidgetItem, checkableChatMessage );
 
-        checkableChatMessage->setSizePolicy(
+  /*      checkableChatMessage->setSizePolicy(
                     QSizePolicy( QSizePolicy::Minimum,
                                  QSizePolicy::Minimum ));
-
+*/
         listWidgetItem->setSizeHint( checkableChatMessage->size() );
-
-        listWidgetItem->setBackground( QColor( 222, 242, 255, 150 ) );
     }
     catch( QException ex )
     {
@@ -81,20 +88,19 @@ void MainWindow::addToListWidgetChat( const QVector<ChatMessage> *newChatMessage
     {
         for( auto it = newChatMessages->begin(); it != newChatMessages->end(); it++ )
         {
-            this->add( *it );
+            this->add( this->ui->listWidget_chat, *it );
         }
 
         const int minCountMessages = 200;
         const int maxCountMessages = 400;
-
         if( minCountMessages < maxCountMessages )
         {
             QMap<uint,ChatMessage> *chatMessages = this->chatManager->getChatMessages();
 
             // just keep between minCountMessages and maxCountMessages Messages into List
-            if( this->ui->listWidget_chat->count() > maxCountMessages &&
-                chatMessages->size() > minCountMessages )
+            if( this->ui->listWidget_chat->count() > maxCountMessages )
             {
+                 qDebug() << "should enter";
                 this->ui->listWidget_chat->clear();
 
                 // start from minCountMessages'th ChatMessage!
@@ -102,7 +108,7 @@ void MainWindow::addToListWidgetChat( const QVector<ChatMessage> *newChatMessage
                      it != chatMessages->end();
                      it++ )
                 {
-                    this->add( *it );
+                    this->add( this->ui->listWidget_chat, *it );
                 }
 
                 qDebug() << "INFO: ChatListView resized to " << this->ui->listWidget_chat->count();
@@ -112,6 +118,7 @@ void MainWindow::addToListWidgetChat( const QVector<ChatMessage> *newChatMessage
         if( this->chatAutoScroll )
         {
             this->ui->listWidget_chat->scrollToBottom();
+            this->currentSliderEndPos = this->ui->listWidget_chat->verticalScrollBar()->sliderPosition();
         }
 
         this->ui->label_countMessages->setText( "Messages in View: " + QString::number(this->ui->listWidget_chat->count())
@@ -137,6 +144,8 @@ void MainWindow::onMessageChecked( uint messageId )
     this->blockSignals( true );
 
     qDebug() << "Message-ID checked: " << messageId;
+
+    this->add( this->ui->listWidget_checkedMessages, this->chatManager->getChatMessage( messageId ) );
 
     this->blockSignals( false );
 }
@@ -292,7 +301,7 @@ void MainWindow::onChatChanged()
     }
 }
 
-void MainWindow::updateChatMessageListView( const QVector<ChatMessage> *newChatMessages )
+void MainWindow::fillChatMessageListView( const QVector<ChatMessage> *newChatMessages )
 {
     this->addToListWidgetChat( newChatMessages );
     qDebug() << "Messages currently in View:\t" << this->ui->listWidget_chat->count();
@@ -308,5 +317,17 @@ void MainWindow::onStopButtonClicked()
 void MainWindow::onContinueButtonClicked()
 {
     qDebug() << "onContinueButtonClicked";
-
 }
+
+void MainWindow::onScroll()
+{
+    if( this->currentSliderEndPos > this->ui->listWidget_chat->verticalScrollBar()->sliderPosition() )
+    {
+        this->chatAutoScroll = false;
+    }
+    else
+    {
+        this->chatAutoScroll = true;
+    }
+}
+

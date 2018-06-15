@@ -29,6 +29,8 @@ public:
         return this->chatMessages;
     }
 
+    ChatMessage getChatMessage( const uint &messageId ) const;
+
     int chatMessagesCount() const
     {
         return this->chatMessages->size();
@@ -56,7 +58,8 @@ private:
 
     uint lastMessagedId;
     QMap<uint, ChatMessage> *chatMessages;
-    QList<QString*> *messages;
+ //   ChatMessage getChatMessage( const uint &messageId ) const;
+
 };
 
 #endif // CHATPARSER_H

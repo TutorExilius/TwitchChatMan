@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>319</width>
-    <height>55</height>
+    <width>141</width>
+    <height>59</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,7 +27,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>500</width>
+    <width>16777215</width>
     <height>16777215</height>
    </size>
   </property>
@@ -36,6 +36,14 @@
   </property>
   <property name="windowTitle">
    <string>Frame</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">CheckableChatMessage
+{
+border: 1px solid #999;
+background-color: white;
+}
+</string>
   </property>
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
@@ -60,7 +68,7 @@
     <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>10</number>
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -92,12 +100,24 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">margin-left: 2px;
 margin-top: 2px;</string>
          </property>
          <property name="text">
           <string/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -189,7 +209,7 @@ margin-top: 2px;</string>
             <enum>Qt::Vertical</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::MinimumExpanding</enum>
+            <enum>QSizePolicy::Minimum</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -216,8 +236,8 @@ margin-top: 2px;</string>
    <slot>onStateChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>19</x>
-     <y>26</y>
+     <x>22</x>
+     <y>17</y>
     </hint>
     <hint type="destinationlabel">
      <x>48</x>
