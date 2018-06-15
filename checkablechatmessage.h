@@ -25,11 +25,18 @@ public:
         return this->chatMessage;
     }
 
+    uint getMessageId() const
+    {
+        return this->chatMessage.getId();
+    }
+
+    void hideCheckBox();
+
 private slots:
     void onStateChanged( int state );
 
 signals:
-    void emitChecked( uint messageId );
+    void emitChecked( uint messageId, int state );
 
 private:
     CheckableChatMessage() = delete;
@@ -37,7 +44,7 @@ private:
     CheckableChatMessage& operator=( const CheckableChatMessage& ) = delete;
 
     Ui::CheckableChatMessage *ui;
-    size_t id;
+   // size_t id;
 
     const MainWindow *mainWindow;
     const ChatMessage chatMessage;

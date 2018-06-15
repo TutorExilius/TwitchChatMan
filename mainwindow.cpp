@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QException>
 #include <QMap>
+#include <QListWidgetItem>
 #include <QString>
 #include <QWidgetItem>
 #include <QPushButton>
@@ -18,7 +19,7 @@ MainWindow::MainWindow( QWidget *parent )
 : QMainWindow{ parent }
 , ui{ new Ui::MainWindow }
 //, ircChat{ nullptr }
-, defaultUrl{ R"(https://www.twitch.tv/[PLACEHOLDER]/chat)" }
+//, defaultUrl{ R"(https://www.twitch.tv/[PLACEHOLDER]/chat)" }
 , chatManager{ nullptr }
 , chatAutoScroll{ true }
 , currentSliderEndPos{ 0 }
@@ -26,10 +27,6 @@ MainWindow::MainWindow( QWidget *parent )
     this->chatManager = new ChatManager{ this };
 
     this->ui->setupUi(this);
-
-    this->ui->lineEdit_password->setEchoMode(QLineEdit::Password);
-
-    this->ui->lineEdit_password->setInputMethodHints(Qt::ImhHiddenText| Qt::ImhNoPredictiveText|Qt::ImhNoAutoUppercase);
 
     this->ui->horizontalWidget_chatFields->setVisible( false );
     this->resize( this->sizeHint() );
@@ -60,6 +57,12 @@ void MainWindow::add( QListWidget *list, const ChatMessage chatMessage )
                 new CheckableChatMessage{ this, chatMessage };
 
        list->addItem( listWidgetItem );
+
+       if( list->objectName() == "listWidget_checkedMessages" )
+       {
+            checkableChatMessage->hideCheckBox();
+       }
+
        list->setItemWidget( listWidgetItem, checkableChatMessage );
 
   /*      checkableChatMessage->setSizePolicy(
@@ -81,6 +84,49 @@ void MainWindow::add( QListWidget *list, const ChatMessage chatMessage )
         qDebug() << "In 'MainWindow::add( const ChatMessage chatMessage )'\n\t" << "CRASHED";
     }
 }
+
+void MainWindow::remove( QListWidget *list, const uint &messageId )
+{
+    try
+    {
+        bool found = false;
+        int itemIndex = 0;
+
+        for (int i = 0; i < list->count(); ++i)
+        {
+            CheckableChatMessage* message = dynamic_cast<CheckableChatMessage*>(list->itemWidget(list->item(i)));
+
+            if( message != nullptr )
+            {
+                if( message->getMessageId() == messageId )
+                {
+                    found = true;
+                    itemIndex = i;
+                    break;
+                }
+            }
+        }
+
+        if( found )
+        {
+ //           list->removeItemWidget( deleteItem );
+            list->takeItem( itemIndex );
+        }
+    }
+    catch( QException ex )
+    {
+        qDebug() << "In 'MainWindow::remove( QListWidget *list, const uint &messageId )'\n\t" << ex.what();
+    }
+    catch( const char *ex )
+    {
+        qDebug() << "In 'MainWindow::remove( QListWidget *list, const uint &messageId )'\n\t" << ex;
+    }
+    catch( ... )
+    {
+        qDebug() << "In 'MainWindow::remove( QListWidget *list, const uint &messageId )'\n\t" << "CRASHED";
+    }
+}
+
 
 void MainWindow::addToListWidgetChat( const QVector<ChatMessage> *newChatMessages )
 {
@@ -139,13 +185,22 @@ void MainWindow::addToListWidgetChat( const QVector<ChatMessage> *newChatMessage
 }
 
 // TODO: copy an instance of ChatMessage with that ID in the right listView
-void MainWindow::onMessageChecked( uint messageId )
+void MainWindow::onMessageChecked( uint messageId, int state )
 {
     this->blockSignals( true );
 
     qDebug() << "Message-ID checked: " << messageId;
 
-    this->add( this->ui->listWidget_checkedMessages, this->chatManager->getChatMessage( messageId ) );
+    ChatMessage chatMessage = this->chatManager->getChatMessage( messageId );
+
+    if( static_cast<CHECKBOX_STATE>(state) == CHECKBOX_STATE::CHECKED )
+    {
+        this->add( this->ui->listWidget_checkedMessages, chatMessage );
+    }
+    else if( static_cast<CHECKBOX_STATE>(state) == CHECKBOX_STATE::UNCHECKED )
+    {
+        this->remove( this->ui->listWidget_checkedMessages, messageId );
+    }
 
     this->blockSignals( false );
 }
@@ -172,10 +227,8 @@ void MainWindow::onConnectClicked()
         currentChannel = this->ui->textEdit_urlToChat->toPlainText();
     }
 
-    QString urlToChat = this->defaultUrl;
-    urlToChat.replace( "[PLACEHOLDER]", currentChannel );
-
-    this->chatManager->start();
+    QByteArray channelByteArray{currentChannel.toUtf8()};
+    this->chatManager->start( channelByteArray );
 
     /*
     if( this->chat != nullptr )

@@ -36,7 +36,7 @@ public:
         return this->chatMessages->size();
     }
 
-    void start();
+    void start( const QByteArray &joiningChannel );
 
 signals:
 

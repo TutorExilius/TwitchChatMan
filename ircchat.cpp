@@ -54,6 +54,9 @@ void IrcChat::connectToChannel( const QByteArray &channel )
         // Twitch Irc Chat Host + Port
         socket->connectToHost( connectionData->host, connectionData->port );
 
+        // Anweisung an den IRC Server, badges mitzusenden (twitch format)
+        //socket->write( "CAP REQ :twitch.tv/membership\r\nCAP REQ :twitch.tv/tags\r\nCAP REQ :twitch.tv/commands\r\n");
+
         // Streamsr OAutch Key
         socket->write("PASS " + connectionData->pass + "\r\n");
 
@@ -72,8 +75,14 @@ void IrcChat::connectToChannel( const QByteArray &channel )
     }
 }
 
- QVector<QString> IrcChat::getDataLines()
- {
+void IrcChat::send( const QByteArray &message )
+{
+    qDebug() << "SEND to server: " << message;
+    qDebug() << "\t" << "Succesfully send " << this->socket->write( message ) << " Bytes";
+}
+
+QVector<QString> IrcChat::getDataLines()
+{
      QVector<QString> chatLines;
 
      do

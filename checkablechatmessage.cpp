@@ -58,5 +58,10 @@ void CheckableChatMessage::onStateChanged( int state )
         "}");
     }
 
-    emit emitChecked( this->chatMessage.getId() );
+    emit emitChecked( this->chatMessage.getId(), state );
+}
+
+void CheckableChatMessage::hideCheckBox()
+{
+    this->ui->checkBox->setVisible( false );
 }

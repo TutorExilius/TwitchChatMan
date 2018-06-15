@@ -12,18 +12,21 @@ struct ConnectionData
     ConnectionData( const QByteArray nick,
                     const QByteArray pass,
                     const QString &host = "irc.chat.twitch.tv",
-                    const quint16 &port = 6667 )
+                    const quint16 &port = 6667,
+                    const QString &joinedChannel = "TutorExilius" )
     : nick{ nick }
     , pass{ pass }
     , host{ host }
     , port{ port }
+    , joinedChannel{ joinedChannel }
     {
     }
 
-    const QString host;
     const QByteArray nick;
     const QByteArray pass;
+    const QString host;
     const quint16 port;
+    QString joinedChannel;
 };
 
 // Forward-Declarations
@@ -41,6 +44,7 @@ public:
     ~IrcChat();
 
     void connectToChannel( const QByteArray &channel );
+    void send( const QByteArray &message );
 
     QVector<QString> getDataLines();
 

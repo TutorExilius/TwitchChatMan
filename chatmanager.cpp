@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QException>
 #include <QMap>
+#include <QString>
 
 ChatManager::ChatManager( QObject *parent )
 : QObject{ parent }
@@ -51,7 +52,7 @@ bool ChatManager::parse( const QString &html )
             {
                 if( this->parser->hasNewContend() )
                 {
-                    ret = this->collectNewMessages( /*this->parser );
+                    ret = this->collectNewMessages( this->parser );
                 }
             }
             else
@@ -103,25 +104,31 @@ void ChatManager::readIrcChatData()
 
             if( !this->chatMessages->contains( chatMessage.getId()))
                 this->chatMessages->insert( chatMessage.getId(), chatMessage );
+
+            if( line == "PING :tmi.twitch.tv\r\n" )
+            {
+                this->ircChat->send( "PONG :tmi.twitch.tv\r\n" );
+            }
         }
+
 
         this->mainWindow->fillChatMessageListView(newChatMessages);
         //lastDateTime = currentDateTime;
     }
 }
 
-void ChatManager::start()
+void ChatManager::start( const QByteArray &joiningChannel )
 {
     if( this->ircChat == nullptr )
     {
         this->ircChat = new IrcChat{ this };
     }
 
-    this->ircChat->connectToChannel( "tutorexilius" );
+    this->ircChat->connectToChannel( joiningChannel );
 }
 
 /*
-bool ChatManager::collectNewMessages( /*Parser *parser )
+bool ChatManager::collectNewMessages( Parser *parser )
 {
     bool ret = false;
 

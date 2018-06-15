@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    enum class CHECKBOX_STATE { CHECKED = 2, UNCHECKED = 0 };
+
     explicit MainWindow( QWidget *parent = nullptr );
     ~MainWindow();
 
@@ -31,7 +33,7 @@ private:
     static bool parseLock;
 
     Ui::MainWindow *ui;
-    const QString defaultUrl;
+ //   const QString defaultUrl;
     qint64 crawlEveryMsec;
     ChatManager *chatManager;
 
@@ -40,11 +42,12 @@ private:
 
     void addToListWidgetChat( const QVector<ChatMessage> *newChatMessages );
     void add( QListWidget *list, const ChatMessage chatMessage );
+    void remove( QListWidget *list, const uint &messageId );
 
 signals:
 
 public slots:
-    void onMessageChecked( uint messageId );
+    void onMessageChecked( uint messageId, int state );
     void onConnectClicked();
     void onDisconnectClicked();
     void onChatChanged();
