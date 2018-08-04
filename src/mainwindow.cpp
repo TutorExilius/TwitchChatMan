@@ -360,6 +360,11 @@ void MainWindow::fillChatMessageListView( const QVector<ChatMessage> *newChatMes
     qDebug() << "Messages currently in View:\t" << this->ui->listWidget_chat->count();
 }
 
+void MainWindow::addChatMessageToListView( const ChatMessage &chatMessage )
+{
+    this->add( this->ui->listWidget_chat, chatMessage );
+}
+
 void MainWindow::onStopButtonClicked()
 {
     qDebug() << "onStopButtonClicked";

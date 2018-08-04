@@ -18,6 +18,7 @@ ChatManager::ChatManager( QObject *parent )
 , parser{ nullptr }
 , lastMessagedId{ 0 }
 , chatMessages{ new QMap<uint,ChatMessage> }
+, successfullyJoinedChannel{ false }
 {
     if( this->mainWindow == nullptr )
     {
@@ -99,23 +100,25 @@ void ChatManager::readIrcChatData()
 
         for( const auto &line : newChatLines )
         {
-            ChatMessage chatMessage = this->parser->parse( line );
+            ChatMessage chatMessage = this->parser->parse( line ); // per Move-Konstruktor ?!
             newChatMessages->push_back( chatMessage );
 
             if( !this->chatMessages->contains( chatMessage.getId()))
                 this->chatMessages->insert( chatMessage.getId(), chatMessage );
-
-            if( line == "PING :tmi.twitch.tv\r\n" )
-            {
-                this->ircChat->send( "PONG :tmi.twitch.tv\r\n" );
-                this->ircChat->flush();
-            }
         }
-
 
         this->mainWindow->fillChatMessageListView(newChatMessages);
         //lastDateTime = currentDateTime;
     }
+}
+
+void ChatManager::addChatMessageToList( const QString &message )
+{
+    ChatMessage newMessage{ 0, QDateTime::currentDateTime(),
+            "System",
+            message };
+
+    this->mainWindow->addChatMessageToListView( newMessage );
 }
 
 void ChatManager::start( const QByteArray &joiningChannel )

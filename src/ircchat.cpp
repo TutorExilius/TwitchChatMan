@@ -3,7 +3,9 @@
 #include "config.h"
 #include "chatmanager.h"
 
+#include <QDateTime>
 #include <QDebug>
+#include <QTimer>
 
 IrcChat::IrcChat( QObject *parent )
 : QObject{ parent }
@@ -12,10 +14,12 @@ IrcChat::IrcChat( QObject *parent )
 , chatManager{ dynamic_cast<ChatManager*>( parent ) }
 , connectionData{ nullptr }
 , currentChannel{ "TutorExilius" }
+, chatBuffer{ nullptr }
+, timer{ this }
 {
     this->config = new Config{"config.txt", this };
-
     this->socket = new QTcpSocket{ this };
+    this->chatBuffer = new QList<QString>;
 
     if( this->chatManager == nullptr )
     {
@@ -41,9 +45,6 @@ void IrcChat::connectToChannel( const QByteArray &channel )
     {
         this->currentChannel = channel;
 
-        QObject::connect( this->socket, &QTcpSocket::readyRead,
-                          this->chatManager, &ChatManager::readIrcChatData,
-                          Qt::UniqueConnection );
 
         const QByteArray lowerNick = connectionData->nick.toLower();
         const QByteArray lowerChannel = channel.toLower();
@@ -57,7 +58,8 @@ void IrcChat::connectToChannel( const QByteArray &channel )
         // Anweisung an den IRC Server, badges mitzusenden (twitch format)
         //socket->write( "CAP REQ :twitch.tv/membership\r\nCAP REQ :twitch.tv/tags\r\nCAP REQ :twitch.tv/commands\r\n");
 
-        // Streamsr OAutch Key
+        this->blockSignals(true);
+        // Streamers OAutch Key
         socket->write("PASS " + connectionData->pass + "\r\n");
 
         // Streamers Nick
@@ -66,8 +68,14 @@ void IrcChat::connectToChannel( const QByteArray &channel )
         // Channel
         socket->write("JOIN #" + lowerChannel + "\r\n");
 
-        // channel = nick!
-        // example: streamername(nick): TutorExilius. Channel: #TutorExilius
+        QObject::connect( this->socket, &QTcpSocket::readyRead,
+                          this, &IrcChat::timerStart,
+                          Qt::UniqueConnection );
+        /*
+        QObject::connect( this->socket, &QTcpSocket::readyRead,
+                              this->chatManager, &ChatManager::readIrcChatData,
+                              Qt::UniqueConnection );
+                              */
     }
     else
     {
@@ -93,11 +101,69 @@ QVector<QString> IrcChat::getDataLines()
      do
      {
         QString readLine = this->socket->readLine();
+
+        // Answer to PING
+        if( readLine == "PING :tmi.twitch.tv\r\n" )
+        {
+            this->send( "PONG :tmi.twitch.tv\r\n" );
+            this->flush();
+        }
+
         chatLines.push_back( readLine );
 
      } while( socket->canReadLine() );
 
      return chatLines;
+}
+
+void IrcChat::timerStart()
+{
+    qDebug() << "Timer started";
+
+    QObject::disconnect( this->socket, &QTcpSocket::readyRead,
+                  this, &IrcChat::timerStart );
+
+
+    QObject::connect( &this->timer, &QTimer::timeout,
+                     this, &IrcChat::handleChannelJoin,
+                     Qt::UniqueConnection );
+
+    this->timer.start( 3000 );
+}
+
+void IrcChat::handleChannelJoin()
+{
+    qDebug() << "Timer stopped (timeout)";
+    this->timer.stop();
+
+    if( this->successfullyJoined() )
+    {
+        QObject::connect( this->socket, &QTcpSocket::readyRead,
+                         this->chatManager, &ChatManager::readIrcChatData,
+                         Qt::UniqueConnection );
+
+        this->chatManager->addChatMessageToList( "Successfully Joined" );
+    }
+    else
+    {
+        this->chatManager->addChatMessageToList( "Channel Join failed. User exists?" );
+    }
+}
+
+bool IrcChat::successfullyJoined()
+{
+    do
+    {
+       QString readLine = this->socket->readLine();
+qDebug() << readLine;
+       if( readLine.contains(":End of /NAMES list\r\n") )
+       {
+           return true;
+       }
+
+    } while( socket->canReadLine() );
+
+    return false;
 }
 
 void IrcChat::disconnectFromServer()

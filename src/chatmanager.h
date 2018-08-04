@@ -37,6 +37,7 @@ public:
     }
 
     void start( const QByteArray &joiningChannel );
+    void addChatMessageToList( const QString &message );
 
 signals:
 
@@ -51,13 +52,13 @@ private:
     void deleteAllChatMessages();
     void resetParser();
 
-
     MainWindow *mainWindow;
     IrcChat *ircChat;
     Parser *parser;
-
     uint lastMessagedId;
     QMap<uint, ChatMessage> *chatMessages;
+    bool successfullyJoinedChannel;
+
  //   ChatMessage getChatMessage( const uint &messageId ) const;
 
 };

@@ -4,10 +4,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1080</x>
+      <x>1112</x>
       <y>464</y>
       <w>440</w>
-      <h>440</h>
+      <h>456</h>
     </coordinates>
     <panel_attributes>*MainWindow*
 --
@@ -32,6 +32,7 @@ _- bool parseLock;_
 + ~MainWindow();
 
 + void fillChatMessageListView( const QVector&lt;ChatMessage&gt; *newChatMessages );
++ void addChatMessageToListView( const ChatMessage &amp;chatMessage )
 - void addToListWidgetChat( const QVector&lt;ChatMessage&gt; *newChatMessages );
 - void add( QListWidget *list, const ChatMessage chatMessage );
 - void remove( QListWidget *list, const uint &amp;messageId );
@@ -49,7 +50,7 @@ _- bool parseLock;_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1216</x>
+      <x>1248</x>
       <y>360</y>
       <w>168</w>
       <h>32</h>
@@ -63,7 +64,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1288</x>
+      <x>1320</x>
       <y>384</y>
       <w>24</w>
       <h>96</h>
@@ -74,7 +75,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1480</x>
+      <x>1512</x>
       <y>424</y>
       <w>192</w>
       <h>88</h>
@@ -86,16 +87,17 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>592</x>
+      <x>624</x>
       <y>464</y>
       <w>440</w>
-      <h>304</h>
+      <h>336</h>
     </coordinates>
     <panel_attributes>*ChatManager*
 --
 
 - uint lastMessagedId;
-  
+- bool successfullyJoinedChannel;
+
 --
 
 - ChatManager() = delete;
@@ -110,6 +112,7 @@ bg=orange</panel_attributes>
 + ChatMessage getChatMessage( const uint &amp;messageId ) const;
 + int chatMessagesCount() const;
 + void start( const QByteArray &amp;joiningChannel );
++ void addChatMessageToList( const QStrng &amp;message );
 - void deleteAllChatMessages();
 - void resetParser();
 
@@ -119,7 +122,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>800</x>
+      <x>832</x>
       <y>376</y>
       <w>336</w>
       <h>104</h>
@@ -131,7 +134,7 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>128</x>
+      <x>160</x>
       <y>920</y>
       <w>168</w>
       <h>32</h>
@@ -145,18 +148,18 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>200</x>
-      <y>760</y>
+      <x>232</x>
+      <y>792</y>
       <w>448</w>
-      <h>176</h>
+      <h>144</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;200.0;10.0;170.0;540.0;170.0;540.0;10.0</additional_attributes>
+    <additional_attributes>10.0;160.0;10.0;130.0;540.0;130.0;540.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>904</x>
+      <x>936</x>
       <y>400</y>
       <w>208</w>
       <h>80</h>
@@ -168,10 +171,10 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>592</x>
+      <x>624</x>
       <y>976</y>
       <w>440</w>
-      <h>224</h>
+      <h>272</h>
     </coordinates>
     <panel_attributes>*IrcChat*
 --
@@ -187,27 +190,31 @@ _+ ConnectionData* getConnectionData();_
 
 + void connectToChannel( const QByteArray &amp;channel );
 + void send( const QByteArray &amp;message );
++ void flush();
 + QVector&lt;QString&gt; getDataLines();
+- bool successfullyJoined();
 
-- slot void disconnectFromServer();</panel_attributes>
+- slot void handleChannelJoin();
+- slot void disconnectFromServer();
+- slot void timerStart();</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>704</x>
-      <y>760</y>
+      <x>736</x>
+      <y>792</y>
       <w>112</w>
-      <h>232</h>
+      <h>200</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
  - IrcChat *ircChat</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;270.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;230.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1080</x>
+      <x>1112</x>
       <y>976</y>
       <w>440</w>
       <h>264</h>
@@ -240,24 +247,24 @@ _- uint messageCount;_
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1016</x>
-      <y>760</y>
+      <x>1048</x>
+      <y>792</y>
       <w>232</w>
-      <h>232</h>
+      <h>200</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
  - Parser *parser</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;230.0;270.0;230.0;270.0;270.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;190.0;270.0;190.0;270.0;230.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>128</x>
-      <y>992</y>
+      <x>160</x>
+      <y>1032</y>
       <w>168</w>
       <h>32</h>
     </coordinates>
-    <panel_attributes>*QTcpSocket*
+    <panel_attributes>*QTimer*
 --
 
 bg=orange</panel_attributes>
@@ -266,8 +273,8 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>288</x>
-      <y>992</y>
+      <x>320</x>
+      <y>976</y>
       <w>320</w>
       <h>32</h>
     </coordinates>
@@ -278,7 +285,7 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>128</x>
+      <x>160</x>
       <y>1192</y>
       <w>416</w>
       <h>96</h>
@@ -296,7 +303,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>456</x>
+      <x>488</x>
       <y>1112</y>
       <w>152</w>
       <h>96</h>
@@ -308,32 +315,32 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>824</x>
-      <y>760</y>
+      <x>856</x>
+      <y>792</y>
       <w>168</w>
-      <h>232</h>
+      <h>200</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
  - ChatManager *chatManager</panel_attributes>
-    <additional_attributes>10.0;270.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;230.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>800</x>
-      <y>1192</y>
+      <x>832</x>
+      <y>1240</y>
       <w>192</w>
-      <h>104</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
  - ConnectionData *connectionData</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>592</x>
-      <y>1280</y>
+      <x>624</x>
+      <y>1312</y>
       <w>440</w>
       <h>208</h>
     </coordinates>
@@ -359,8 +366,8 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>128</x>
-      <y>1056</y>
+      <x>160</x>
+      <y>1096</y>
       <w>168</w>
       <h>32</h>
     </coordinates>
@@ -373,19 +380,19 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>200</x>
-      <y>1080</y>
+      <x>232</x>
+      <y>1120</y>
       <w>112</w>
-      <h>128</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
  - QFile *configFile</panel_attributes>
-    <additional_attributes>10.0;140.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>96</x>
+      <x>128</x>
       <y>928</y>
       <w>48</w>
       <h>328</h>
@@ -396,7 +403,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>288</x>
+      <x>320</x>
       <y>928</y>
       <w>360</w>
       <h>64</h>
@@ -407,7 +414,7 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1560</x>
+      <x>1592</x>
       <y>928</y>
       <w>168</w>
       <h>32</h>
@@ -421,7 +428,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1352</x>
+      <x>1384</x>
       <y>936</y>
       <w>224</w>
       <h>56</h>
@@ -432,7 +439,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>368</x>
+      <x>400</x>
       <y>432</y>
       <w>288</w>
       <h>48</h>
@@ -444,7 +451,7 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>8</x>
+      <x>40</x>
       <y>464</y>
       <w>424</w>
       <h>256</h>
@@ -474,7 +481,7 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>128</x>
+      <x>160</x>
       <y>768</y>
       <w>168</w>
       <h>32</h>
@@ -488,7 +495,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>200</x>
+      <x>232</x>
       <y>712</y>
       <w>72</w>
       <h>72</h>
@@ -500,7 +507,7 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>0</x>
+      <x>32</x>
       <y>120</y>
       <w>440</w>
       <h>264</h>
@@ -531,7 +538,7 @@ bg=orange</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>136</x>
+      <x>168</x>
       <y>0</y>
       <w>168</w>
       <h>32</h>
@@ -545,7 +552,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>208</x>
+      <x>240</x>
       <y>24</y>
       <w>24</w>
       <h>112</h>
@@ -556,7 +563,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>400</x>
+      <x>432</x>
       <y>80</y>
       <w>248</w>
       <h>88</h>
@@ -568,7 +575,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>208</x>
+      <x>240</x>
       <y>376</y>
       <w>200</w>
       <h>104</h>
@@ -580,7 +587,7 @@ bg=orange</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>432</x>
+      <x>464</x>
       <y>352</y>
       <w>728</w>
       <h>128</h>
@@ -588,5 +595,31 @@ bg=orange</panel_attributes>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
  - const MainWindow *mainWindow</panel_attributes>
     <additional_attributes>10.0;20.0;890.0;20.0;890.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>976</y>
+      <w>168</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>*QTcpSocket*
+--
+
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>320</x>
+      <y>1032</y>
+      <w>320</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+ - QTimer timer</panel_attributes>
+    <additional_attributes>380.0;20.0;10.0;20.0</additional_attributes>
   </element>
 </diagram>

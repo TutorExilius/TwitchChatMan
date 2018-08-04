@@ -25,6 +25,7 @@ public:
     ~MainWindow();
 
    void fillChatMessageListView( const QVector<ChatMessage> *newChatMessages );
+   void addChatMessageToListView( const ChatMessage &chatMessage );
 
 private: 
     MainWindow( const MainWindow &obj )= delete;
