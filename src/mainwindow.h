@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    enum class CHECKBOX_STATE { CHECKED = 2, UNCHECKED = 0 };
+    enum class CheckboxState { CHECKED = 2, UNCHECKED = 0 };
 
     explicit MainWindow( QWidget *parent = nullptr );
     ~MainWindow();
@@ -33,7 +33,6 @@ private:
     static bool parseLock;
 
     Ui::MainWindow *ui;
- //   const QString defaultUrl;
     qint64 crawlEveryMsec;
     ChatManager *chatManager;
 

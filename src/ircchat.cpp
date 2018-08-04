@@ -81,6 +81,11 @@ void IrcChat::send( const QByteArray &message )
     qDebug() << "\t" << "Succesfully send " << this->socket->write( message ) << " Bytes";
 }
 
+void IrcChat::flush()
+{
+     this->socket->flush();
+}
+
 QVector<QString> IrcChat::getDataLines()
 {
      QVector<QString> chatLines;

@@ -18,6 +18,7 @@ int main( int argc, char *argv[] )
         QDir::setCurrent( QCoreApplication::applicationDirPath() );
 #endif
 
+        QMainWindow test;
         MainWindow w;
         w.show();
         ret = a.exec();

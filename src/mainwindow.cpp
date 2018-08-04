@@ -193,11 +193,11 @@ void MainWindow::onMessageChecked( uint messageId, int state )
 
     ChatMessage chatMessage = this->chatManager->getChatMessage( messageId );
 
-    if( static_cast<CHECKBOX_STATE>(state) == CHECKBOX_STATE::CHECKED )
+    if( static_cast<CheckboxState>(state) == CheckboxState::CHECKED )
     {
         this->add( this->ui->listWidget_checkedMessages, chatMessage );
     }
-    else if( static_cast<CHECKBOX_STATE>(state) == CHECKBOX_STATE::UNCHECKED )
+    else if( static_cast<CheckboxState>(state) == CheckboxState::UNCHECKED )
     {
         this->remove( this->ui->listWidget_checkedMessages, messageId );
     }

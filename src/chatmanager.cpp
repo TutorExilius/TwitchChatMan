@@ -108,6 +108,7 @@ void ChatManager::readIrcChatData()
             if( line == "PING :tmi.twitch.tv\r\n" )
             {
                 this->ircChat->send( "PONG :tmi.twitch.tv\r\n" );
+                this->ircChat->flush();
             }
         }
 

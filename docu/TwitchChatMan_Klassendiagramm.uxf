@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1080</x>
+      <y>464</y>
+      <w>440</w>
+      <h>440</h>
+    </coordinates>
+    <panel_attributes>*MainWindow*
+--
+
+_- bool parseLock;_
+
+- qint64 crawlEveryMsec;
+- bool chatAutoScroll;
+- int currentSliderEndPos;
+
+--
+
++  ----------------------------
+    | &lt;&lt;enumeration&gt;&gt;      |
+*    | CheckboxState    |*
+     -------------------------
+    | CHECKED = 0       |
+    | UNCHECKED = 1  |
+    ---------------------------- 
+
++ MainWindow( QWidget *parent = nullptr );
++ ~MainWindow();
+
++ void fillChatMessageListView( const QVector&lt;ChatMessage&gt; *newChatMessages );
+- void addToListWidgetChat( const QVector&lt;ChatMessage&gt; *newChatMessages );
+- void add( QListWidget *list, const ChatMessage chatMessage );
+- void remove( QListWidget *list, const uint &amp;messageId );
+
++ slot void onMessageChecked( uint messageId, int state );
++ slot void onConnectClicked();
++ slot void onDisconnectClicked();
++ slot void onChatChanged();
++ slot void onStopButtonClicked();
++ slot void onContinueButtonClicked();
++ slot void void onScroll();
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1216</x>
+      <y>360</y>
+      <w>168</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>*QMainWindow*
+--
+
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1288</x>
+      <y>384</y>
+      <w>24</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1480</x>
+      <y>424</y>
+      <w>192</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ -  Ui::MainWindow *ui</panel_attributes>
+    <additional_attributes>50.0;90.0;90.0;90.0;90.0;10.0;10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>592</x>
+      <y>464</y>
+      <w>440</w>
+      <h>304</h>
+    </coordinates>
+    <panel_attributes>*ChatManager*
+--
+
+- uint lastMessagedId;
+  
+--
+
+- ChatManager() = delete;
+- ChatManager( const ChatManager &amp;obj ) = delete;
+- ChatManager&amp; operator=( const ChatManager &amp;obj ) = delete;
+
++ ChatManager( QObject *parent );
++ ~ChatManager();
+
++ void reset();
++ QMap&lt;uint, ChatMessage&gt; *getChatMessages() const;
++ ChatMessage getChatMessage( const uint &amp;messageId ) const;
++ int chatMessagesCount() const;
++ void start( const QByteArray &amp;joiningChannel );
+- void deleteAllChatMessages();
+- void resetParser();
+
++ slot void readIrcChatData();</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>800</x>
+      <y>376</y>
+      <w>336</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - ChatManager *chatManager</panel_attributes>
+    <additional_attributes>400.0;110.0;400.0;20.0;10.0;20.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>128</x>
+      <y>920</y>
+      <w>168</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>*QObject*
+--
+
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>200</x>
+      <y>760</y>
+      <w>448</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;200.0;10.0;170.0;540.0;170.0;540.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>904</x>
+      <y>400</y>
+      <w>208</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - MainWindow *mainWindow</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;20.0;240.0;20.0;240.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>592</x>
+      <y>976</y>
+      <w>440</w>
+      <h>224</h>
+    </coordinates>
+    <panel_attributes>*IrcChat*
+--
+
+- QByteArray currentChannel;
+
+--
+
+_+ ConnectionData* getConnectionData();_
+
++ IrcChat( QObject *parent );
++ ~IrcChat();
+
++ void connectToChannel( const QByteArray &amp;channel );
++ void send( const QByteArray &amp;message );
++ QVector&lt;QString&gt; getDataLines();
+
+- slot void disconnectFromServer();</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>704</x>
+      <y>760</y>
+      <w>112</w>
+      <h>232</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - IrcChat *ircChat</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;270.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1080</x>
+      <y>976</y>
+      <w>440</w>
+      <h>264</h>
+    </coordinates>
+    <panel_attributes>*Parser*
+--
+
+_- uint messageCount;_
+- bool good;
+ 
+--
+
+- Parser() = delete;
+- Parser( const Parser &amp;obj ) = delete;
+- Parser&amp; operator=( const Parser &amp;obj ) = delete;
+
++ Parser( QObject *parent );
+
++ void reset();
++ bool isGood() const
++ ChatMessage parse( const QString &amp;line ) const;
+
+- QString extractName( const QString &amp;line ) const;
+- QString extractMessage( const QString &amp;line ) const;
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1016</x>
+      <y>760</y>
+      <w>232</w>
+      <h>232</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - Parser *parser</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;230.0;270.0;230.0;270.0;270.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>128</x>
+      <y>992</y>
+      <w>168</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>*QTcpSocket*
+--
+
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>288</x>
+      <y>992</y>
+      <w>320</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - QTcpSocket *socket</panel_attributes>
+    <additional_attributes>380.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>128</x>
+      <y>1192</y>
+      <w>416</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>*Config*
+--
+
+--
+
++ Config( const QString &amp;configFilePath, QObject *parent = nullptr );
++ const ConnectionData *getConnectionData() const;
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>456</x>
+      <y>1112</y>
+      <w>152</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - Config *config</panel_attributes>
+    <additional_attributes>170.0;20.0;10.0;20.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>824</x>
+      <y>760</y>
+      <w>168</w>
+      <h>232</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - ChatManager *chatManager</panel_attributes>
+    <additional_attributes>10.0;270.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>800</x>
+      <y>1192</y>
+      <w>192</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - ConnectionData *connectionData</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>592</x>
+      <y>1280</y>
+      <w>440</w>
+      <h>208</h>
+    </coordinates>
+    <panel_attributes>*ConnectionData*
+--
+
++ const QByteArray nick;
++ const QByteArray pass;
++ const QString host;
++ const quint16 port;
++ QString joinedChannel;
+
+--
+
++ ConnectionData( const QByteArray nick,
+                               const QByteArray pass,
+                               const QString &amp;host = "irc.chat.twitch.tv",
+                               const quint16 &amp;port = 6667,
+                               const QString &amp;joinedChannel = "TutorExilius" );
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>128</x>
+      <y>1056</y>
+      <w>168</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>*QFile*
+--
+
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>200</x>
+      <y>1080</y>
+      <w>112</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - QFile *configFile</panel_attributes>
+    <additional_attributes>10.0;140.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>96</x>
+      <y>928</y>
+      <w>48</w>
+      <h>328</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>40.0;10.0;10.0;10.0;10.0;390.0;40.0;390.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>288</x>
+      <y>928</y>
+      <w>360</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;430.0;10.0;430.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1560</x>
+      <y>928</y>
+      <w>168</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>*QObject*
+--
+
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1352</x>
+      <y>936</y>
+      <w>224</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>260.0;10.0;10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>368</x>
+      <y>432</y>
+      <w>288</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=[uint]-&gt;
+ - QMap&lt;uint, ChatMessage&gt; *chatMessages</panel_attributes>
+    <additional_attributes>330.0;40.0;330.0;20.0;10.0;20.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>8</x>
+      <y>464</y>
+      <w>424</w>
+      <h>256</h>
+    </coordinates>
+    <panel_attributes>*ChatMessage*
+--
+
+- uint id;
+- QString user;
+- QString message;
+    
+--
+
++ ChatMessage();
++ ChatMessage( const uint &amp;id, const QDateTime &amp;dateTime,
+                            const QString &amp;user, const QString &amp;message );
++ ChatMessage( const ChatMessage &amp;obj );
+
++ ChatMessage&amp; operator=( const ChatMessage &amp;obj );
+
++ const uint&amp; getId() const;
++ const QString&amp; getUser() const;
++ const QDateTime&amp; getDateTime() const;
++ const QString&amp; getMessage() const;</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>128</x>
+      <y>768</y>
+      <w>168</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>*QDateTime*
+--
+
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>200</x>
+      <y>712</y>
+      <w>72</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+ - dateTime</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>120</y>
+      <w>440</w>
+      <h>264</h>
+    </coordinates>
+    <panel_attributes>*CheckableChatMessage*
+--
+
+--
+
+- CheckableChatMessage() = delete;
+- CheckableChatMessage( const CheckableChatMessage&amp; ) = delete;
+- CheckableChatMessage&amp; operator=( const CheckableChatMessage&amp; ) = delete;
+
++ CheckableChatMessage( QWidget *parent, const ChatMessage chatMessage );
++ ~CheckableChatMessage();
+
++ ChatMessage getChatMessage() const;
++ uint getMessageId() const;
++ void hideCheckBox();
+
+- slot void onStateChanged( int state );
+
++ signal void emitChecked( uint messageId, int state );
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>136</x>
+      <y>0</y>
+      <w>168</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>*QFrame*
+--
+
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>208</x>
+      <y>24</y>
+      <w>24</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>400</x>
+      <y>80</y>
+      <w>248</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+- Ui::CheckableChatMessage *ui</panel_attributes>
+    <additional_attributes>50.0;90.0;90.0;90.0;90.0;10.0;10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>208</x>
+      <y>376</y>
+      <w>200</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+ - const ChatMessage chatMessage</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>432</x>
+      <y>352</y>
+      <w>728</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+ - const MainWindow *mainWindow</panel_attributes>
+    <additional_attributes>10.0;20.0;890.0;20.0;890.0;140.0</additional_attributes>
+  </element>
+</diagram>

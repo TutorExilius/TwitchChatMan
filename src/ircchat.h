@@ -7,27 +7,7 @@
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QAbstractSocket>
 
-struct ConnectionData
-{
-    ConnectionData( const QByteArray nick,
-                    const QByteArray pass,
-                    const QString &host = "irc.chat.twitch.tv",
-                    const quint16 &port = 6667,
-                    const QString &joinedChannel = "TutorExilius" )
-    : nick{ nick }
-    , pass{ pass }
-    , host{ host }
-    , port{ port }
-    , joinedChannel{ joinedChannel }
-    {
-    }
-
-    const QByteArray nick;
-    const QByteArray pass;
-    const QString host;
-    const quint16 port;
-    QString joinedChannel;
-};
+#include "connectiondata.h"
 
 // Forward-Declarations
 class Config;
@@ -45,6 +25,7 @@ public:
 
     void connectToChannel( const QByteArray &channel );
     void send( const QByteArray &message );
+    void flush();
 
     QVector<QString> getDataLines();
 

@@ -30,7 +30,8 @@ HEADERS  += mainwindow.h \
     chatmanager.h \
     parser.h \
     ircchat.h \
-    config.h
+    config.h \
+    connectiondata.h
 
 FORMS    += mainwindow.ui \
     checkablechatmessage.ui
