@@ -15,6 +15,8 @@
 #include <QScrollBar>
 #include <QSlider>
 
+QString MainWindow::archivFilename = "archiv.txt";
+
 MainWindow::MainWindow( QWidget *parent )
 : QMainWindow{ parent }
 , ui{ new Ui::MainWindow }
@@ -23,10 +25,13 @@ MainWindow::MainWindow( QWidget *parent )
 , chatManager{ nullptr }
 , chatAutoScroll{ true }
 , currentSliderEndPos{ 0 }
+, loadedArchive{ false }
 {
     this->chatManager = new ChatManager{ this };
 
     this->ui->setupUi(this);
+
+    this->load();
 
     this->ui->horizontalWidget_chatFields->setVisible( false );
     this->resize( this->sizeHint() );
@@ -55,12 +60,35 @@ void MainWindow::add( QListWidget *list, const ChatMessage chatMessage )
 
         CheckableChatMessage *checkableChatMessage =
                 new CheckableChatMessage{ this, chatMessage };
-
        list->addItem( listWidgetItem );
 
        if( list->objectName() == "listWidget_checkedMessages" )
        {
+
             checkableChatMessage->hideCheckBox();
+            checkableChatMessage->showDeleteButton();
+            checkableChatMessage->showReSendQuestionButton();
+
+            checkableChatMessage->registerDeletButton();
+            checkableChatMessage->registerReSendButton();
+
+            QObject::connect( checkableChatMessage, &CheckableChatMessage::emitReSendQuestion,
+                              this, &MainWindow::onReSendQuestionClicked,
+                              Qt::UniqueConnection );
+
+            QObject::connect( checkableChatMessage, &CheckableChatMessage::emitDeleteMessage,
+                              this, &MainWindow::onDeleteClicked,
+                              Qt::UniqueConnection );
+
+//checkableChatMessage->update();
+//checkableChatMessage->updateGeometry();
+//checkableChatMessage->resize( checkableChatMessage->sizeHint() );
+       }
+       else
+       {
+
+
+           checkableChatMessage->registerMarkButton();
        }
 
        list->setItemWidget( listWidgetItem, checkableChatMessage );
@@ -83,12 +111,19 @@ void MainWindow::add( QListWidget *list, const ChatMessage chatMessage )
     {
         qDebug() << "In 'MainWindow::add( const ChatMessage chatMessage )'\n\t" << "CRASHED";
     }
+
+    if( list->objectName() == "listWidget_checkedMessages" )
+    {
+        this->save();
+    }
 }
 
-void MainWindow::remove( QListWidget *list, const uint &messageId )
+void MainWindow::remove( QListWidget *list, qint64 messageId )
 {
     try
     {
+        this->blockSignals( true );
+
         bool found = false;
         int itemIndex = 0;
 
@@ -112,19 +147,23 @@ void MainWindow::remove( QListWidget *list, const uint &messageId )
  //           list->removeItemWidget( deleteItem );
             list->takeItem( itemIndex );
         }
+
+        this->blockSignals( false );
     }
     catch( QException ex )
     {
-        qDebug() << "In 'MainWindow::remove( QListWidget *list, const uint &messageId )'\n\t" << ex.what();
+        qDebug() << "In 'MainWindow::remove( QListWidget *list, qint64 messageId )'\n\t" << ex.what();
     }
     catch( const char *ex )
     {
-        qDebug() << "In 'MainWindow::remove( QListWidget *list, const uint &messageId )'\n\t" << ex;
+        qDebug() << "In 'MainWindow::remove( QListWidget *list, qint64 messageId )'\n\t" << ex;
     }
     catch( ... )
     {
-        qDebug() << "In 'MainWindow::remove( QListWidget *list, const uint &messageId )'\n\t" << "CRASHED";
+        qDebug() << "In 'MainWindow::remove( QListWidget *list, qint64 messageId )'\n\t" << "CRASHED";
     }
+
+    this->save();
 }
 
 
@@ -141,7 +180,7 @@ void MainWindow::addToListWidgetChat( const QVector<ChatMessage> *newChatMessage
         const int maxCountMessages = 400;
         if( minCountMessages < maxCountMessages )
         {
-            QMap<uint,ChatMessage> *chatMessages = this->chatManager->getChatMessages();
+            QMap<qint64 ,ChatMessage> *chatMessages = this->chatManager->getChatMessages();
 
             // just keep between minCountMessages and maxCountMessages Messages into List
             if( this->ui->listWidget_chat->count() > maxCountMessages )
@@ -185,7 +224,7 @@ void MainWindow::addToListWidgetChat( const QVector<ChatMessage> *newChatMessage
 }
 
 // TODO: copy an instance of ChatMessage with that ID in the right listView
-void MainWindow::onMessageChecked( uint messageId, int state )
+void MainWindow::onMessageChecked( qint64  messageId, int state )
 {
     this->blockSignals( true );
 
@@ -389,3 +428,108 @@ void MainWindow::onScroll()
     }
 }
 
+
+void MainWindow::onDeleteClicked( qint64 messageId, bool isArchivedMessage )
+{
+    bool found = false;
+    int itemIndex = 0;
+
+    auto list = this->ui->listWidget_chat;
+
+    for (int i = 0; i < list->count(); ++i)
+    {
+        CheckableChatMessage* message = dynamic_cast<CheckableChatMessage*>(list->itemWidget(list->item(i)));
+
+        if( message != nullptr )
+        {
+            qDebug() << message->getMessageId();
+            qDebug() << messageId;
+
+            if( message->getMessageId() == messageId )
+            {
+                found = true;
+                itemIndex = i;
+
+                message->uncheck();
+
+                break;
+            }
+        }
+    }
+}
+
+void MainWindow::onReSendQuestionClicked( const QString &user, const QString &message )
+{
+    QString fullMessage = "[Alte Frage von " + user + "] " + message;
+    this->chatManager->write( fullMessage.toUtf8() );
+}
+
+
+void MainWindow::save()
+{
+    if( loadedArchive )
+    {
+        QFile file( MainWindow::archivFilename );
+
+        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+          QTextStream stream(&file);
+          stream.setCodec("UTF-8");
+          stream.setGenerateByteOrderMark(false);
+
+          auto list = this->ui->listWidget_checkedMessages;
+
+          for (int i = 0; i < list->count(); ++i)
+          {
+              CheckableChatMessage* message = dynamic_cast<CheckableChatMessage*>(list->itemWidget(list->item(i)));
+
+              if( message != nullptr )
+              {
+                  QString out = message->getChatMessage().saveFormat();
+                  qDebug() << out ;
+                  stream << out;
+              }
+          }
+          stream.flush();
+
+          qDebug() << "saved";
+        }
+    }
+}
+
+void MainWindow::load()
+{
+    QFile file( MainWindow::archivFilename );
+
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QTextStream stream(&file);
+        stream.setCodec("UTF-8");
+        stream.setGenerateByteOrderMark(false);
+
+        QString data = stream.readAll();
+        QStringList dataList = data.split( "\n" );
+
+
+        if( dataList.size() > 4 )
+        {
+            const int chatMessageLineOffset = 4;
+
+            for( int i = 0; i<dataList.size()-1; i+=chatMessageLineOffset )
+            {
+                ChatMessage chatMessage{
+                    dataList.at(i).toLongLong(),
+                    QDateTime::fromString( dataList.at(i+1) ),
+                    dataList.at(i+2),
+                    dataList.at(i+3),
+                    true
+                };
+
+                this->add( this->ui->listWidget_checkedMessages, chatMessage );
+            }
+        }
+
+    }
+
+    this->loadedArchive = true;
+}

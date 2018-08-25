@@ -2,17 +2,20 @@
 
 ChatMessage::ChatMessage()
 : id{ 0 }
+, fromArchive{ false }
 {
 }
 
-ChatMessage::ChatMessage( const uint &id,
+ChatMessage::ChatMessage( qint64 id,
                           const QDateTime &dateTime,
                           const QString &user,
-                          const QString &message )
+                          const QString &message,
+                          const bool fromArchive )
 : id{ id }
 , dateTime{ dateTime }
 , user{ user }
 , message{ message }
+, fromArchive{ fromArchive }
 {
 }
 
@@ -21,6 +24,7 @@ ChatMessage::ChatMessage( const ChatMessage &obj )
 , dateTime{ obj.dateTime }
 , user{ obj.user }
 , message{ obj.message }
+, fromArchive{ obj.fromArchive }
 {
 }
 
@@ -30,6 +34,7 @@ ChatMessage& ChatMessage::operator=( const ChatMessage &obj )
     this->dateTime = obj.dateTime;
     this->user = obj.user;
     this->message = obj.message;
+    this->fromArchive = obj.fromArchive;
 
     return *this;
 }

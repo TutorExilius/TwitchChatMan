@@ -24,12 +24,12 @@ public:
 
     void reset();
 
-    QMap<uint, ChatMessage> *getChatMessages() const
+    QMap<qint64 , ChatMessage> *getChatMessages() const
     {
         return this->chatMessages;
     }
 
-    ChatMessage getChatMessage( const uint &messageId ) const;
+    ChatMessage getChatMessage( qint64  messageId ) const;
 
     int chatMessagesCount() const
     {
@@ -38,6 +38,7 @@ public:
 
     void start( const QByteArray &joiningChannel );
     void addChatMessageToList( const QString &message );
+    void write( const QString &text );
 
 signals:
 
@@ -55,8 +56,8 @@ private:
     MainWindow *mainWindow;
     IrcChat *ircChat;
     Parser *parser;
-    uint lastMessagedId;
-    QMap<uint, ChatMessage> *chatMessages;
+    qint64  lastMessagedId;
+    QMap<qint64 , ChatMessage> *chatMessages;
     bool successfullyJoinedChannel;
 
  //   ChatMessage getChatMessage( const uint &messageId ) const;

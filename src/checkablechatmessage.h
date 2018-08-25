@@ -25,18 +25,30 @@ public:
         return this->chatMessage;
     }
 
-    uint getMessageId() const
+    qint64 getMessageId() const
     {
         return this->chatMessage.getId();
     }
 
+    void uncheck();
     void hideCheckBox();
+    void showDeleteButton();
+    void showReSendQuestionButton();
+
+    void registerDeletButton();
+    void registerMarkButton();
+    void registerReSendButton();
 
 private slots:
     void onStateChanged( int state );
+    void onDeleteClicked();
+    void onMarkClicked();
+    void onReSendClicked();
 
 signals:
-    void emitChecked( uint messageId, int state );
+    void emitChecked( qint64  messageId, int state );
+    void emitDeleteMessage( qint64  messageId, bool isArchivedMessage );
+    void emitReSendQuestion( QString user, QString message );
 
 private:
     CheckableChatMessage() = delete;

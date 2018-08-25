@@ -29,6 +29,11 @@ public:
     void send( const QByteArray &message );
     void flush();
 
+    QByteArray getCurrentChannel()const
+    {
+        return this->currentChannel;
+    }
+
     QVector<QString> getDataLines();
 
 private slots:

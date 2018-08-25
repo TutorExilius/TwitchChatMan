@@ -17,7 +17,7 @@ ChatManager::ChatManager( QObject *parent )
 , ircChat{ nullptr }
 , parser{ nullptr }
 , lastMessagedId{ 0 }
-, chatMessages{ new QMap<uint,ChatMessage> }
+, chatMessages{ new QMap<qint64 ,ChatMessage> }
 , successfullyJoinedChannel{ false }
 {
     if( this->mainWindow == nullptr )
@@ -33,7 +33,7 @@ ChatManager::~ChatManager()
 {
 }
 
-ChatMessage ChatManager::getChatMessage( const uint &messageId ) const
+ChatMessage ChatManager::getChatMessage( qint64 messageId ) const
 {
     return this->chatMessages->value(messageId);
 }
@@ -90,7 +90,7 @@ void ChatManager::readIrcChatData()
     //static QDateTime lastDateTime = QDateTime::currentDateTime();
     //const QDateTime currentDateTime = QDateTime::currentDateTime();
 
-    //qint64 milliSecDiff = lastDateTime.msecsTo( currentDateTime );
+    //qint64  milliSecDiff = lastDateTime.msecsTo( currentDateTime );
 
     // if( milliSecDiff > 1000 )
     {
@@ -205,4 +205,12 @@ void ChatManager::deleteAllChatMessages()
 void ChatManager::resetParser()
 {
     this->parser->reset();
+}
+
+void ChatManager::write( const QString &text )
+{
+    QString message = "PRIVMSG #" + this->ircChat->getCurrentChannel().toLower() + " :" + text + "\r\n";
+
+    this->ircChat->send( message.toUtf8() );
+    this->ircChat->flush();
 }

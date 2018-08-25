@@ -13,7 +13,7 @@ Parser::Parser( QObject *parent )
 : QObject( parent )
 , good{ true }
 //, chatManager{ dynamic_cast<ChatManager*>( parent ) }
-//, parsedChatMessages{ new QMap<uint, ChatMessage> }
+//, parsedChatMessages{ new QMap<qint64 , ChatMessage> }
 {
     /*if( this->chatManager == nullptr )
     {
@@ -34,7 +34,9 @@ ChatMessage Parser::parse( const QString &line ) const
     const QString username = this->extractName( line );
     const QString message = this->extractMessage( line );
 
-    return ChatMessage{ ++Parser::messageCount,
+    ++messageCount;
+
+    return ChatMessage{ QDateTime::currentDateTime().toMSecsSinceEpoch(),
                         QDateTime::currentDateTime(),
                         username,
                         message };
@@ -44,7 +46,7 @@ ChatMessage Parser::parse( const QString &line ) const
 /*
 // TODO: optimize this method! -> delegate matching-steps and delegate ChatMessage-Construction
 //       (reduce if-construct depth)
-void Parser::parse( const QString &html, const uint &parseGreaterMessageId )
+void Parser::parse( const QString &html, qint64 parseGreaterMessageId )
 {
     this->reset(); // reset Parser (set good and emtpy parsedChatMesssages)
 
@@ -152,7 +154,7 @@ void Parser::parse( const QString &html, const uint &parseGreaterMessageId )
     }
 }
 
-const QMap<uint, ChatMessage>* Parser::getNewMessages() const
+const QMap<qint64 , ChatMessage>* Parser::getNewMessages() const
 {
     return this->parsedChatMessages;
 }
